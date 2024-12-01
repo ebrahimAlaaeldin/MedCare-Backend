@@ -1,6 +1,5 @@
 package com.example.medcare.entities;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,11 +16,6 @@ public class patient {
     private String name;
     @Column(name = "DOB", nullable = false)
     private String DOB;
-
-
-
-
-
 
 
 }
