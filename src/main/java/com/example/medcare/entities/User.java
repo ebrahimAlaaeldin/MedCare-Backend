@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -44,8 +45,10 @@ public class User {
     @Column(nullable = false)
     private String role;
 
-    @Column(nullable = false,insertable = false,updatable = false)
+    @Column(nullable = false, updatable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
+
 
     @Column(nullable = false)
     private Integer age;
