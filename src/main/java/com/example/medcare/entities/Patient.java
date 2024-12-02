@@ -23,6 +23,7 @@ public class Patient extends User {
 //    private String emergencyContactRelation;
 
 }
+<<<<<<< HEAD
 
 
 
@@ -32,3 +33,5 @@ public class Patient extends User {
 
 
 
+=======
+>>>>>>> d56767e (rebasing process)
