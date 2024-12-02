@@ -13,9 +13,15 @@ import lombok.NoArgsConstructor;
 public class Patient extends User {
 
 
+<<<<<<< HEAD
 //    private String insurance;
        private String insuranceId;
 //    private String insuranceGroup;
+=======
+    //    private String insurance;
+    private String insuranceId;
+    //    private String insuranceGroup;
+>>>>>>> 5d5a516 (rebasing process)
 //
 //
 //   private String emergencyContactName;
@@ -23,3 +29,15 @@ public class Patient extends User {
 //    private String emergencyContactRelation;
 
 }
+<<<<<<< HEAD
+=======
+
+
+
+
+
+
+
+
+
+>>>>>>> 5d5a516 (rebasing process)
