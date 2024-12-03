@@ -19,6 +19,7 @@ public class ForgetResetPasswordController {
             @RequestHeader("Authorization") String authorizationHeader) {
 
         // Extract the token from the Authorization header (Bearer <token>)
+
         String token = authorizationHeader.startsWith("Bearer ") ?
                 authorizationHeader.substring(7) : authorizationHeader;
 
