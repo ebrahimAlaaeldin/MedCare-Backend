@@ -20,7 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/authenticate")
 @RequiredArgsConstructor //lombok annotation to create a constructor with all the required fields
 @Getter
-public class RegistrationController {
+public class
+RegistrationController {
 
     private final SignUpService signUpService;
     private final AuthenticationProvider authenticationProvider;
