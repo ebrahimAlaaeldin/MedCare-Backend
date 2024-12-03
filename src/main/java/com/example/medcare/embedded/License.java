@@ -2,16 +2,21 @@ package com.example.medcare.embedded;
 
 
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Data
-@Builder
 @Embeddable
+@NoArgsConstructor
+@AllArgsConstructor
 public class License {
 
     private String licenseNumber;
     private String Specialty;
-    private String issuingDate;
+    private LocalDate issuingDate;
 
 }
