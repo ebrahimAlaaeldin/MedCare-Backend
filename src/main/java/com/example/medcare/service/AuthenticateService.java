@@ -14,6 +14,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -44,19 +46,21 @@ public class AuthenticateService {
         }
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        var token = jwtService.generateToken(user);
-        var tokenEntity = Token.builder()
-                .token(token)
-                .user(user)
-                .revoked(false)
-                .build();
-        tokenRepository.save(tokenEntity);
+
+        Map<String, Object> claims = Map.of("role", user.getRole().toString(),
+            "firstName", user.getFirstName(),
+                "lastName", user.getLastName(),
+                "email", user.getEmail(),
+                "username", user.getUsername()
+        )
+                ;
+        var token = jwtService.generateToken(claims, user);
 
         return ResponseMessageDto.builder()
                 .message("Authentication successful")
                 .success(true)
                 .statusCode(200)
-                .data(AuthenticationResponse.builder().token(token).build())
+                .data(token)
                 .build();
 
 
