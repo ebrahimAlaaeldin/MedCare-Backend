@@ -18,8 +18,4 @@ public class ClinicAdmin extends User{
     @JoinColumn(name = "clinicId")
     private Clinic clinic;
 
-
-
-
-
 }
