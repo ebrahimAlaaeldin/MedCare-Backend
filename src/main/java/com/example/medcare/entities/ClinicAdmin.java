@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class ClinicAdmin extends User{
 
 
+
     @OneToOne
     @JoinColumn(name = "clinicId")
     private Clinic clinic;
