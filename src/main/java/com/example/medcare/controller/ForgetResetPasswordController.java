@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class ForgetResetPasswordController {
     private final ForgetResetPasswordService forgetResetPasswordService;
-    @PostMapping("/forgetPassword")
+    @PostMapping("/resetPassword")
     public ResponseMessageDto forgetPassword(
             @RequestBody ForgetPasswordDto input,
             @RequestHeader("Authorization") String authorizationHeader) {
