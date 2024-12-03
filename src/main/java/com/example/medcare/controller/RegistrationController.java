@@ -38,6 +38,8 @@ public class RegistrationController {
         return ResponseEntity.ok(authenticateService.authenticate(request));
     }
 
+
+
 //    // if the user is logged in and its token is expired, this endpoint will be called to refresh the token
 //    @PostMapping("/refresh-token")
 //    public void refreshToken(
