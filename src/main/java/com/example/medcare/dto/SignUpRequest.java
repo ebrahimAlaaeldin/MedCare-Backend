@@ -2,6 +2,7 @@ package com.example.medcare.dto;
 
 
 import com.example.medcare.Enums.Role;
+import com.example.medcare.embedded.Address;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,12 +23,9 @@ public class SignUpRequest {
     private String email;
     private String role;
     private String phoneNumber;
-    private String street;
-    private String city;
-    private String country;
+    private Address address;
     @JsonFormat(pattern = "yyyy-dd-MM") // Specify the format expected
     private LocalDate dateOfBirth;
-    private String postalCode;
     //patient attributes
     private String insuranceNumber;
     private String emergencyContactNumber;

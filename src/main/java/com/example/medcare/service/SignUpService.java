@@ -59,7 +59,7 @@ public class SignUpService {
     }
 
     private AuthenticationResponse patientSignUp(SignUpRequest signUpRequest) {
-        Address address = new Address(signUpRequest.getStreet(),signUpRequest.getCity(),signUpRequest.getCountry(),signUpRequest.getPostalCode());
+
         var patient = Patient.builder()
                 .username(signUpRequest.getUsername())
                 .insuranceId(signUpRequest.getInsuranceNumber())
@@ -70,8 +70,10 @@ public class SignUpService {
                 .email(signUpRequest.getEmail())
                 .role(Role.PATIENT)
                 .phoneNumber(signUpRequest.getPhoneNumber())
-                .address(address)
+                .address(signUpRequest.getAddress())
                 .age(calculateAge(signUpRequest.getDateOfBirth()))
+                .birthDate(signUpRequest.getDateOfBirth())
+                .createdAt(LocalDate.now().atStartOfDay())
                 .build();
         patientRepository.save(patient);
 
@@ -94,7 +96,6 @@ public class SignUpService {
     }
 
     private AuthenticationResponse doctorSignUp(SignUpRequest signUpRequest) {
-        Address address = new Address(signUpRequest.getStreet(), signUpRequest.getCity(), signUpRequest.getCountry(), signUpRequest.getPostalCode());
         License license = new License(signUpRequest.getLicenseNumber(), signUpRequest.getSpecialty(), signUpRequest.getIssuingDate());
 
         var doctor = Doctor.builder()
@@ -106,7 +107,7 @@ public class SignUpService {
                 .email(signUpRequest.getEmail())
                 .role(Role.DOCTOR)
                 .phoneNumber(signUpRequest.getPhoneNumber())
-                .address(address)
+                .address(signUpRequest.getAddress())
                 .age(signUpRequest.getDateOfBirth().getYear())
                 .build();
         doctorRepository.save(doctor);

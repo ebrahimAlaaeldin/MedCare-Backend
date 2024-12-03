@@ -18,11 +18,14 @@ import java.util.List;
 
 @Data
 @SuperBuilder
-@NoArgsConstructor
 @Entity
 @Table(name = "Users")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements UserDetails{
+
+    public User(){
+        this.createdAt = LocalDateTime.now();
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -51,7 +54,7 @@ public class User implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(nullable = false,insertable = false,updatable = false)
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
