@@ -31,13 +31,11 @@ public class RegistrationController {
     public ResponseEntity<ResponseMessageDto> registerUser(@RequestBody SignUpRequest request) {
         System.out.println("request = " + request);
         return ResponseEntity.ok(signUpService.signUp(request));
-
     }
 
     @PostMapping("/login")
     public ResponseEntity<Object> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticateService.authenticate(request));
-
     }
 
 //    // if the user is logged in and its token is expired, this endpoint will be called to refresh the token
