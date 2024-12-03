@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RequiredArgsConstructor
@@ -30,7 +32,6 @@ public class SignUpService {
 
     private final PatientRepository patientRepository;
     private final JwtService jwtService;
-    private final TokenRepository tokenRepository;
     private final DoctorRepository doctorRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -81,14 +82,22 @@ public class SignUpService {
                     .createdAt(LocalDate.now())
                     .build();
             patientRepository.save(patient);
+            Map<String,Object> extraClaims = Map.of(
+                    "role",patient.getRole().name(),
+                    "firstName",patient.getFirstName(),
+                    "lastName",patient.getLastName(),
+                    "username",patient.getUsername(),
+                    "email",patient.getEmail()
+            );
 
-            var jwtToken = jwtService.generateToken(patient);
-            tokenRepository.save(Token.builder().token(jwtToken).user(patient).build());
+
+            var jwtToken = jwtService.generateToken(extraClaims,patient);
+
             return ResponseMessageDto.builder()
                     .message("Patient registered successfully")
                     .success(true)
                     .statusCode(200)
-                    .data(AuthenticationResponse.builder().token(jwtToken).build())
+                    .data(jwtToken)
                     .build();
         }
 
@@ -123,13 +132,19 @@ public class SignUpService {
                 .build();
         doctorRepository.save(doctor);
 
-        var jwtToken = jwtService.generateToken(doctor);
-        tokenRepository.save(Token.builder().token(jwtToken).user(doctor).build());
+        Map<String,Object> extraClaims = Map.of(
+                "role",doctor.getRole().name(),
+                "firstName",doctor.getFirstName(),
+                "lastName",doctor.getLastName(),
+                "username",doctor.getUsername(),
+                "email",doctor.getEmail()
+        );
+        var jwtToken = jwtService.generateToken(extraClaims,doctor);
         return ResponseMessageDto.builder()
                 .message("Doctor registered successfully, Waiting for Liscense verification")
                 .success(true)
                 .statusCode(200)
-                .data(AuthenticationResponse.builder().token(jwtToken).build())
+                .data(jwtToken)
                 .build();
     }
 }

@@ -36,6 +36,7 @@ public class RegistrationController {
 
     @PostMapping("/login")
     public ResponseEntity<Object> authenticate(@RequestBody AuthenticationRequest request) {
+        System.out.println("request = " + request);
         return ResponseEntity.ok(authenticateService.authenticate(request));
 
     }
