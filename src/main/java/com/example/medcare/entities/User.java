@@ -1,6 +1,5 @@
 package com.example.medcare.entities;
 
-
 import com.example.medcare.enums.Role;
 import com.example.medcare.embedded.Address;
 import jakarta.persistence.*;

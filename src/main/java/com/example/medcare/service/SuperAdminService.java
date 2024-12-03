@@ -42,7 +42,6 @@ public class SuperAdminService {
         }).collect(Collectors.toList());
     }
 
-
     // approving doctor application
     public void approveDoctorApplication(String username) {
         Optional<Doctor> doctor = doctorRepository.findByUsername(username);

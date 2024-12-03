@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+
+import java.time.LocalDate;
 
 @Entity
 @AllArgsConstructor
@@ -27,11 +28,7 @@ public class Clinic {
 
     private Boolean isActive;
 
-    private LocalDateTime createdAt;
-
-
-
-
+    private LocalDate createdAt;
 
     @OneToOne
     @JoinColumn(name = "clinicAdminId")

@@ -1,8 +1,7 @@
 package com.example.medcare.dto;
 
 
-import com.example.medcare.Authorization.AuthenticationResponse;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
