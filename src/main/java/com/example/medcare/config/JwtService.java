@@ -56,10 +56,6 @@ public class JwtService {
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-    //Overloaded method to generate token without extra claims
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(Map.of(), userDetails);
-    }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);

@@ -25,4 +25,5 @@ public class Patient extends User {
     private String emergencyContactPhone;
 //    private String emergencyContactRelation;
 
+
 }
