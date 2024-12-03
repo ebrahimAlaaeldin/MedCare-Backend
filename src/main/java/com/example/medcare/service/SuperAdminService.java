@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ApplicationsReviewService {
+public class SuperAdminService {
 
 
     private final DoctorRepository doctorRepository;

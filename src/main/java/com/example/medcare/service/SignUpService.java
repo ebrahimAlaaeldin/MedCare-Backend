@@ -62,9 +62,6 @@ public class SignUpService {
                     .statusCode(500)
                     .build();
         }
-
-
-
     }
 
     private ResponseMessageDto patientSignUp(SignUpRequest signUpRequest) {
@@ -81,7 +78,7 @@ public class SignUpService {
                     .address(signUpRequest.getAddress())
                     .age(calculateAge(signUpRequest.getDateOfBirth()))
                     .birthDate(signUpRequest.getDateOfBirth())
-                    .createdAt(LocalDate.now().atStartOfDay())
+                    .createdAt(LocalDate.now())
                     .build();
             patientRepository.save(patient);
 
@@ -135,6 +132,4 @@ public class SignUpService {
                 .data(AuthenticationResponse.builder().token(jwtToken).build())
                 .build();
     }
-
-
 }

@@ -12,7 +12,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,7 +25,7 @@ import java.util.List;
 public class User implements UserDetails{
 
     public User(){
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDate.now();
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,7 +56,7 @@ public class User implements UserDetails{
     private Role role;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @Column(nullable = false)
     private Integer age;
