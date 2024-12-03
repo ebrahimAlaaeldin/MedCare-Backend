@@ -63,6 +63,9 @@ public class User implements UserDetails{
     @Column(nullable = false)
     private LocalDate birthDate; //example: 1999-12-31
 
+    @Column()
+    private String pinNumber;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
