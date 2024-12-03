@@ -1,10 +1,16 @@
 package com.example.medcare.entities;
 import com.example.medcare.embedded.Address;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Entity
+@AllArgsConstructor
+@Builder
+@Data
 public class Clinic {
 
     @Id

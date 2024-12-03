@@ -1,11 +1,12 @@
 package com.example.medcare.entities;
 
 
-import com.example.medcare.Enums.Role;
+import com.example.medcare.enums.Role;
 import com.example.medcare.embedded.Address;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +20,7 @@ import java.util.List;
 @Data
 @SuperBuilder
 @Entity
+@AllArgsConstructor
 @Table(name = "Users")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements UserDetails{
@@ -62,6 +64,8 @@ public class User implements UserDetails{
 
     @Column(nullable = false)
     private LocalDate birthDate; //example: 1999-12-31
+
+    
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,7 +1,7 @@
 package com.example.medcare.service;
 
 import com.example.medcare.Authorization.AuthenticationResponse;
-import com.example.medcare.Enums.Role;
+import com.example.medcare.enums.Role;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.dto.SignUpRequest;
@@ -112,6 +112,7 @@ public class SignUpService {
         License license = new License(signUpRequest.getLicenseNumber(), signUpRequest.getSpecialty(), signUpRequest.getIssuingDate());
 
         var doctor = Doctor.builder()
+                .isVerified(false)
                 .username(signUpRequest.getUsername())
                 .license(license)
                 .firstName(signUpRequest.getFirstName())
@@ -128,7 +129,7 @@ public class SignUpService {
         var jwtToken = jwtService.generateToken(doctor);
         tokenRepository.save(Token.builder().token(jwtToken).user(doctor).build());
         return ResponseMessageDto.builder()
-                .message("Doctor registered successfully")
+                .message("Doctor registered successfully, Waiting for Liscense verification")
                 .success(true)
                 .statusCode(200)
                 .data(AuthenticationResponse.builder().token(jwtToken).build())

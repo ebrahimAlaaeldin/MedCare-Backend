@@ -23,7 +23,7 @@ public class AuthenticateService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
-
+        
 
     public Object authenticate(AuthenticationRequest request) {
         try {

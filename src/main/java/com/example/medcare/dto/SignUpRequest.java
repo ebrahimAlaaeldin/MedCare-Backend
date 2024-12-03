@@ -1,7 +1,6 @@
 package com.example.medcare.dto;
 
 
-import com.example.medcare.Enums.Role;
 import com.example.medcare.embedded.Address;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
