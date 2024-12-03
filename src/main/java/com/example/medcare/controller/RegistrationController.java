@@ -1,8 +1,7 @@
 package com.example.medcare.controller;
 
-
-import com.example.medcare.Authorization.AuthenticationResponse;
 import com.example.medcare.dto.AuthenticationRequest;
+import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.dto.SignUpRequest;
 import com.example.medcare.service.AuthenticateService;
 import com.example.medcare.service.SignUpService;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/authenticate")
@@ -30,7 +28,7 @@ public class RegistrationController {
     private final AuthenticateService authenticateService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> registerUser(@RequestBody SignUpRequest request) {
+    public ResponseEntity<ResponseMessageDto> registerUser(@RequestBody SignUpRequest request) {
         System.out.println("request = " + request);
         return ResponseEntity.ok(signUpService.signUp(request));
 

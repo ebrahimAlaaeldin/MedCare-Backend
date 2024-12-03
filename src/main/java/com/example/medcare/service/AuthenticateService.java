@@ -4,6 +4,7 @@ package com.example.medcare.service;
 import com.example.medcare.Authorization.AuthenticationResponse;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.AuthenticationRequest;
+import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.entities.Token;
 import com.example.medcare.repository.TokenRepository;
 import com.example.medcare.repository.UserRepository;
@@ -32,8 +33,14 @@ public class AuthenticateService {
             );
         }
         catch (Exception e) {
+            Object response = ResponseMessageDto.builder()
+                    .message("Invalid credentials")
+                    .success(false)
+                    .statusCode(401)
+                    .build();
+
             log.error("Invalid credentials", e);
-            return "Invalid credentials";
+            return response;
         }
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -44,7 +51,14 @@ public class AuthenticateService {
                 .revoked(false)
                 .build();
         tokenRepository.save(tokenEntity);
-        return AuthenticationResponse.builder().token(token).build();
+
+        return ResponseMessageDto.builder()
+                .message("Authentication successful")
+                .success(true)
+                .statusCode(200)
+                .data(AuthenticationResponse.builder().token(token).build())
+                .build();
+
 
     }
 
