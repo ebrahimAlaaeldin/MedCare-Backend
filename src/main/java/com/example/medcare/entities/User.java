@@ -1,7 +1,7 @@
 package com.example.medcare.entities;
 
 
-import com.example.medcare.Enums.Role;
+import com.example.medcare.enums.Role;
 import com.example.medcare.embedded.Address;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -54,7 +54,7 @@ public class User implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(nullable = false)
+    //@Column(insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
