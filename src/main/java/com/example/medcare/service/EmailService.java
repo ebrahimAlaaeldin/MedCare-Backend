@@ -23,7 +23,7 @@ public class EmailService {
 
             // Set email details
             helper.setTo(mailBody.to());
-            helper.setFrom("ebrahim.alaa26@gmail.com");
+            helper.setFrom("medcaresystem07@gmail.com");
             helper.setSubject(mailBody.subject());
 
             // Set the email content as HTML
