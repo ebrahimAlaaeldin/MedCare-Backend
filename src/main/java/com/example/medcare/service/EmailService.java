@@ -16,12 +16,12 @@ public class EmailService {
     public void setSimpleMessage(MailBody mailBody){
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(mailBody.to());
-        message.setFrom(); //Later
+        message.setFrom("ebrahim.alaa26@gmail.com");
         message.setSubject(mailBody.subject());
-        message.setText(mailBody.text());
+        message.setText(mailBody.body());
 
         javaMailSender.send(message);
-        
+
 
 
     }

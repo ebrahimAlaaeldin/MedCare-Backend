@@ -1,4 +1,8 @@
 package com.example.medcare.dto;
 
-public record MailBody (String to, String subject, String text) {
+
+import lombok.Builder;
+
+@Builder
+public record MailBody (String to, String subject, String body ) {
 }

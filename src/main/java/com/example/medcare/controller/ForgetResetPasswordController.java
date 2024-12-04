@@ -1,11 +1,10 @@
 package com.example.medcare.controller;
 
-import com.example.medcare.dto.AuthenticationRequest;
-import com.example.medcare.dto.ForgetPasswordDto;
-import com.example.medcare.dto.ResponseMessageDto;
+import com.example.medcare.dto.*;
+import com.example.medcare.repository.UserRepository;
 import com.example.medcare.service.ForgetResetPasswordService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -15,10 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class ForgetResetPasswordController {
     private final ForgetResetPasswordService forgetResetPasswordService;
+    private final UserRepository userRepository;
 
     @PostMapping("/resetPassword")
     public ResponseMessageDto resetPassword(
-            @RequestBody ForgetPasswordDto input,
+            @RequestBody ResetPasswordDto input,
             @RequestHeader("Authorization") String authorizationHeader) {
 
         // Extract the token from the Authorization header (Bearer <token>)
@@ -29,16 +29,20 @@ public class ForgetResetPasswordController {
         // Pass the token along with the request body to the service
         return(forgetResetPasswordService.resetPassword(input, token));
     }
-    @PostMapping("/forgetPassword")
-    public ResponseMessageDto forgetPassword(@RequestBody String email) {
+
+
+
+
+    @PostMapping("/api/authenticate/forgetPassword")
+    public ResponseMessageDto forgetPassword(@RequestBody ForgetPassEmail email) {
         return forgetResetPasswordService.forgetPassword(email);
     }
-    @PostMapping("/forgetPassword/validatePin")
-    public ResponseMessageDto validatePin(@RequestBody String pin) {
-        return forgetResetPasswordService.validatePin(pin);
+    @PostMapping("/api/authenticate/forgetPassword/validatePin")
+    public ResponseMessageDto validatePin(@RequestBody ValidateOTPDto otpValidationRequest) {
+        return forgetResetPasswordService.validatePin(otpValidationRequest);
     }
-    @PostMapping("/changePassword")
-    public ResponseMessageDto changePassword(@RequestBody AuthenticationRequest user) {
-        return forgetResetPasswordService.changePassword(user);
+    @PostMapping("/api/authenticate/changePassword")
+    public ResponseMessageDto changePassword(@RequestBody ChangePasswordDto changePass) {
+        return forgetResetPasswordService.changePassword(changePass);
     }
 }
