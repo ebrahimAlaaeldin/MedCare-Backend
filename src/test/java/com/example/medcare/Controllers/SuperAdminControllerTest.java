@@ -106,6 +106,7 @@ class SuperAdminControllerTest {
                 .andExpect(content().string("Doctor application approved"));
     }
 
+    
    /*  @Test
     void testApproveDoctorApplication_NotFound() throws Exception {
         when(superAdminService.approveDoctorApplication("unknownDoctor")).thenReturn(notFoundResponse);
