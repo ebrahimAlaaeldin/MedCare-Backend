@@ -4,6 +4,8 @@ import com.example.medcare.dto.*;
 import com.example.medcare.repository.UserRepository;
 import com.example.medcare.service.ForgetResetPasswordService;
 import lombok.AllArgsConstructor;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
+@CrossOrigin
+
 public class ForgetResetPasswordController {
     private final ForgetResetPasswordService forgetResetPasswordService;
     private final UserRepository userRepository;

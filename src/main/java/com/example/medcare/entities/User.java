@@ -42,6 +42,9 @@ public class User implements UserDetails{
     @Column(nullable = false)
     private String lastName;
 
+    //@Column(nullable = false)
+    private String pinNumber;
+
     @Column(unique = true,nullable = false)
     private String email;
 
