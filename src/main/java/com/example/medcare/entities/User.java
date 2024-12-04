@@ -54,7 +54,6 @@ public class User implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(nullable = false)
     private LocalDate createdAt;
 
     @Column(nullable = false)

@@ -1,12 +1,10 @@
 package com.example.medcare.service;
 
 
-import com.example.medcare.Authorization.AuthenticationResponse;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.AuthenticationRequest;
 import com.example.medcare.dto.ResponseMessageDto;
-import com.example.medcare.entities.Token;
-import com.example.medcare.repository.TokenRepository;
+
 import com.example.medcare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +22,6 @@ public class AuthenticateService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
         
 
     public Object authenticate(AuthenticationRequest request) {

@@ -30,12 +30,13 @@ public class SuperAdminService {
             doctorDTO.setFirstName(doctor.getFirstName());
             doctorDTO.setLastName(doctor.getLastName());
             doctorDTO.setEmail(doctor.getEmail());
+            doctorDTO.setAddress(doctor.getAddress());
+            doctorDTO.setAge(doctor.getAge());
+            doctorDTO.setDateOfBirth(doctor.getBirthDate());
             doctorDTO.setPhoneNumber(doctor.getPhoneNumber());
             doctorDTO.setSpecialty(doctor.getLicense().getSpecialty());
             doctorDTO.setIssuingDate(doctor.getLicense().getIssuingDate());
             doctorDTO.setLicenseNumber(doctor.getLicense().getLicenseNumber());
-            doctorDTO.setClinicNames(
-                    doctor.getClinics().stream().map(clinic -> clinic.getName()).collect(Collectors.toList()));
             doctorDTO.setLicenseNumber(doctor.getLicense().getLicenseNumber());
             doctorDTO.setIssuingDate(doctor.getLicense().getIssuingDate());
             return doctorDTO;
