@@ -1,6 +1,7 @@
 package com.example.medcare;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -34,7 +35,7 @@ public class MedCareApplication {
             .email("")
             .phoneNumber("+1234567890")
             .role(Role.SUPER_ADMIN)
-            .createdAt(LocalDate.now())
+            .createdAt(LocalDateTime.now())
             .age(25)
             .birthDate(LocalDate.of(1998, 5, 15))
             .address(Address.builder()

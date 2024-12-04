@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public class SignUpService {
                     .address(signUpRequest.getAddress())
                     .age(calculateAge(signUpRequest.getDateOfBirth()))
                     .birthDate(signUpRequest.getDateOfBirth())
-                    .createdAt(LocalDate.now())
+                    .createdAt(LocalDateTime.now())
                     .build();
             patientRepository.save(patient);
                 
