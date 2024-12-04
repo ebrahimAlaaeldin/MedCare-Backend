@@ -17,7 +17,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class PatientDTO {
 
-
     private String username;
     private String firstName;
     private String password;

@@ -1,4 +1,5 @@
 package com.example.medcare.service;
 
-public class UserService {
+public class DoctorService {
+    
 }
