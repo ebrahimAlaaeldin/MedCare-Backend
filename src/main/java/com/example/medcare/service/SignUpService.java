@@ -96,7 +96,8 @@ public class SignUpService {
                 .birthDate(signUpRequest.getDateOfBirth())
                 .phoneNumber(signUpRequest.getPhoneNumber())
                 .address(signUpRequest.getAddress())
-                .age(signUpRequest.getDateOfBirth().getYear())
+                .age(calculateAge(signUpRequest.getDateOfBirth()))
+                .createdAt(LocalDate.now())
                 .build();
         doctorRepository.save(doctor);
 
