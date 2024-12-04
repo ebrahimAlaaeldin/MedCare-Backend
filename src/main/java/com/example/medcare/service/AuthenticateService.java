@@ -38,7 +38,7 @@ public class AuthenticateService {
                     .statusCode(401)
                     .build();
 
-            log.error("Invalid credentials", e);
+            //log.error("Invalid credentials", e);
             return response;
         }
         var user = userRepository.findByUsername(request.getUsername())

@@ -36,16 +36,14 @@ RegistrationController {
         return ResponseEntity.ok(signUpService.patientSignUp(request));
     }
 
-
     @PostMapping("/register/doctor")
     public ResponseEntity<ResponseMessageDto> registerDoctor(@RequestBody DoctorDTO request) {
-        System.out.println("request = " + request);
-        return ResponseEntity.ok(regisrationService.doctorSignUp(request));
+
+        return ResponseEntity.ok(signUpService.doctorSignUp(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<Object> authenticate(@RequestBody AuthenticationRequest request) {
-        System.out.println("request = " + request);
         return ResponseEntity.ok(authenticateService.authenticate(request));
     }
 

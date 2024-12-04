@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,21 +28,28 @@ public class SuperAdminController {
 
 
     @GetMapping("/doctorApplications/pending")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<List<DoctorDTO>> getPendingApplications() {
 
-        return new ResponseEntity<>(applicationsReviewService.returnPendingApplications(), HttpStatus.OK);
+        List<DoctorDTO> pendingApplications = applicationsReviewService.returnPendingApplications();
+
+        if (pendingApplications.isEmpty()) 
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        else 
+            return new ResponseEntity<>(pendingApplications, HttpStatus.OK);
+        
     }
 
 
     // approve doctor application
     @PutMapping("/doctorApplications/approve/{username}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<String> approveDoctorApplication(@PathVariable String username) {
         applicationsReviewService.approveDoctorApplication(username);
         return new ResponseEntity<>("Doctor application approved", HttpStatus.OK);
     }
 
 
-    // TODO: Super Admin review Clinic applications
 
     
 

@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.medcare.embedded.Address;
 import com.example.medcare.entities.User;
-import com.example.medcare.enums.Role;
+import com.example.medcare.Enums.Role;
 import com.example.medcare.repository.UserRepository;
 
 
@@ -35,7 +35,7 @@ public class MedCareApplication {
             .email("")
             .phoneNumber("+1234567890")
             .role(Role.SUPER_ADMIN)
-            .createdAt(LocalDateTime.now())
+            .createdAt(LocalDate.now())
             .age(25)
             .birthDate(LocalDate.of(1998, 5, 15))
             .address(Address.builder()

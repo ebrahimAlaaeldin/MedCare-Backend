@@ -7,13 +7,11 @@ import lombok.Data;
 
 
 import java.time.LocalDate;
-
 @Entity
 @AllArgsConstructor
 @Builder
 @Data
 public class Clinic {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer clinicId;
@@ -29,9 +27,7 @@ public class Clinic {
     private Boolean isActive;
 
     private LocalDate createdAt;
-
     @OneToOne
     @JoinColumn(name = "clinicAdminId")
     private ClinicAdmin clinicAdmin;
-
 }

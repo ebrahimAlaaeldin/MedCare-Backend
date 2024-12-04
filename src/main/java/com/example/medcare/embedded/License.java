@@ -1,14 +1,10 @@
 package com.example.medcare.embedded;
-
-
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
-
 @Data
 @Embeddable
 @NoArgsConstructor
@@ -19,5 +15,4 @@ public class License {
     private String licenseNumber;
     private String Specialty;
     private LocalDate issuingDate;
-
 }

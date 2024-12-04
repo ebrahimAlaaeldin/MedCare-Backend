@@ -1,17 +1,16 @@
 package com.example.medcare.entities;
 
-
-import com.example.medcare.enums.Role;
+import com.example.medcare.Enums.Role;
 import com.example.medcare.embedded.Address;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -19,12 +18,13 @@ import java.util.List;
 @Data
 @SuperBuilder
 @Entity
+@AllArgsConstructor
 @Table(name = "Users")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements UserDetails{
 
     public User(){
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDate.now();
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,8 +54,7 @@ public class User implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    //@Column(insertable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @Column(nullable = false)
     private Integer age;
@@ -63,8 +62,7 @@ public class User implements UserDetails{
     @Column(nullable = false)
     private LocalDate birthDate; //example: 1999-12-31
 
-    @Column()
-    private String pinNumber;
+    
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -94,9 +92,9 @@ public class User implements UserDetails{
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Token> tokens;
-
-    @OneToOne(mappedBy = "user")
-    private ForgotPassword forgotPassword;
-
-
 }
+
+
+
+
+

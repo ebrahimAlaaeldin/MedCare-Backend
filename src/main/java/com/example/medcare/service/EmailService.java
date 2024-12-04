@@ -1,6 +1,4 @@
 package com.example.medcare.service;
-
-
 import com.example.medcare.dto.MailBody;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

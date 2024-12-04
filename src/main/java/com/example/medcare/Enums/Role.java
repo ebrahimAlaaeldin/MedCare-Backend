@@ -1,4 +1,4 @@
-package com.example.medcare.enums;
+package com.example.medcare.Enums;
 
 import com.example.medcare.Authorization.Permission;
 import lombok.Getter;
