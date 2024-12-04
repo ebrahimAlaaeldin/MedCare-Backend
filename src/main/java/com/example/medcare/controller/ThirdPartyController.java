@@ -1,5 +1,6 @@
 package com.example.medcare.controller;
-import org.springframework.stereotype.Controller;
+import com.example.medcare.dto.ResponseMessageDto;
+import com.example.medcare.dto.TokenThirdPartyDto;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.medcare.service.ThirdPartyService;
@@ -12,12 +13,12 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/authenticate/thirdparty")
+@RequestMapping("/api/authenticate/thirdParty")
 public class ThirdPartyController {
     private final ThirdPartyService thirdPartyService;
     @PostMapping("/login")
-    public String thirdPartyLogin(@RequestBody String Token) {
-        System.out.println(Token);
-        return thirdPartyService.ThirdPartyLogin(Token);
+    public ResponseMessageDto thirdPartyLogin(@RequestBody TokenThirdPartyDto token) throws Exception {
+        System.out.println("dfs");
+        return thirdPartyService.thirdPartyLogin(token);
     }
 }
