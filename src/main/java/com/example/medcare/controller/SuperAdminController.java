@@ -31,7 +31,13 @@ public class SuperAdminController {
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<List<DoctorDTO>> getPendingApplications() {
 
-        return new ResponseEntity<>(applicationsReviewService.returnPendingApplications(), HttpStatus.OK);
+        List<DoctorDTO> pendingApplications = applicationsReviewService.returnPendingApplications();
+
+        if (pendingApplications.isEmpty()) 
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        else 
+            return new ResponseEntity<>(pendingApplications, HttpStatus.OK);
+        
     }
 
 
@@ -44,7 +50,6 @@ public class SuperAdminController {
     }
 
 
-    // TODO: Super Admin review Clinic applications
 
     
 

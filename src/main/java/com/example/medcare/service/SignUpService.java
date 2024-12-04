@@ -26,94 +26,116 @@ import java.util.Map;
 @Service
 public class SignUpService {
 
+        private final PatientRepository patientRepository;
+        private final JwtService jwtService;
+        private final DoctorRepository doctorRepository;
+        private final PasswordEncoder passwordEncoder;
 
-    private final PatientRepository patientRepository;
-    private final JwtService jwtService;
-    private final DoctorRepository doctorRepository;
-    private final PasswordEncoder passwordEncoder;
+        public ResponseMessageDto patientSignUp(PatientDTO signUpRequest) {
+                // Validate required fields
+                if (signUpRequest.getUsername() == null || signUpRequest.getUsername().isEmpty() ||
+                                signUpRequest.getPassword() == null || signUpRequest.getPassword().isEmpty() ||
+                                signUpRequest.getEmail() == null || signUpRequest.getEmail().isEmpty()) {
+                        return ResponseMessageDto.builder()
+                                        .message("Invalid sign up request")
+                                        .success(false)
+                                        .statusCode(400)
+                                        .build();
+                }
 
-    public ResponseMessageDto patientSignUp(PatientDTO signUpRequest) {
-        
-            var patient = Patient.builder()
-                    .username(signUpRequest.getUsername())
-                    .insuranceId(signUpRequest.getInsuranceNumber())
-                    .emergencyContactPhone(signUpRequest.getEmergencyContactNumber())
-                    .firstName(signUpRequest.getFirstName())
-                    .lastName(signUpRequest.getLastName())
-                    .password(passwordEncoder.encode(signUpRequest.getPassword()))
-                    .email(signUpRequest.getEmail())
-                    .role(Role.PATIENT)
-                    .phoneNumber(signUpRequest.getPhoneNumber())
-                    .address(signUpRequest.getAddress())
-                    .age(calculateAge(signUpRequest.getDateOfBirth()))
-                    .birthDate(signUpRequest.getDateOfBirth())
-                    .createdAt(LocalDate.now())
-                    .build();
-            patientRepository.save(patient);
-                
-            Map<String,Object> extraClaims = Map.of(
-                    "role",patient.getRole().name(),
-                    "firstName",patient.getFirstName(),
-                    "lastName",patient.getLastName(),
-                    "username",patient.getUsername(),
-                    "email",patient.getEmail()
-            );
+                // Build the Patient entity
+                var patient = Patient.builder()
+                                .username(signUpRequest.getUsername())
+                                .insuranceId(signUpRequest.getInsuranceNumber())
+                                .emergencyContactPhone(signUpRequest.getEmergencyContactNumber())
+                                .firstName(signUpRequest.getFirstName())
+                                .lastName(signUpRequest.getLastName())
+                                .password(passwordEncoder.encode(signUpRequest.getPassword()))
+                                .email(signUpRequest.getEmail())
+                                .role(Role.PATIENT)
+                                .phoneNumber(signUpRequest.getPhoneNumber())
+                                .address(signUpRequest.getAddress())
+                                .age(calculateAge(signUpRequest.getDateOfBirth()))
+                                .birthDate(signUpRequest.getDateOfBirth())
+                                .createdAt(LocalDate.now())
+                                .build();
 
+                patientRepository.save(patient);
 
-            var jwtToken = jwtService.generateToken(extraClaims,patient);
+                // Prepare extra claims for JWT
+                Map<String, Object> extraClaims = Map.of(
+                                "role", patient.getRole().name(),
+                                "firstName", patient.getFirstName(),
+                                "lastName", patient.getLastName(),
+                                "username", patient.getUsername(),
+                                "email", patient.getEmail());
 
-            return ResponseMessageDto.builder()
-                    .message("Patient registered successfully")
-                    .success(true)
-                    .statusCode(200)
-                    .data(jwtToken)
-                    .build();
+                var jwtToken = jwtService.generateToken(extraClaims, patient);
+
+                return ResponseMessageDto.builder()
+                                .message("Patient registered successfully")
+                                .success(true)
+                                .statusCode(200)
+                                .data(jwtToken)
+                                .build();
         }
 
-    public int calculateAge(LocalDate dateOfBirth) {
-        // Get the current date
-        LocalDate currentDate = LocalDate.now();
+        public int calculateAge(LocalDate dateOfBirth) {
+                LocalDate currentDate = LocalDate.now();
+                Period period = Period.between(dateOfBirth, currentDate);
+                return period.getYears();
+        }
 
-        // Calculate the period between the current date and the birthdate
-        Period period = Period.between(dateOfBirth, currentDate);
+        public ResponseMessageDto doctorSignUp(DoctorDTO signUpRequest) {
+                // Validate required fields
+                if (signUpRequest.getUsername() == null || signUpRequest.getUsername().isEmpty() ||
+                                signUpRequest.getPassword() == null || signUpRequest.getPassword().isEmpty() ||
+                                signUpRequest.getEmail() == null || signUpRequest.getEmail().isEmpty()) {
+                        return ResponseMessageDto.builder()
+                                        .message("Invalid sign up request")
+                                        .success(false)
+                                        .statusCode(400)
+                                        .build();
+                }
 
-        // Return the years part of the period (i.e., the age)
-        return period.getYears();
-    }
+                // Create the License object
+                License license = new License(signUpRequest.getLicenseNumber(), signUpRequest.getSpecialty(),
+                                signUpRequest.getIssuingDate());
 
-    public ResponseMessageDto doctorSignUp(DoctorDTO signUpRequest) {
-        License license = new License(signUpRequest.getLicenseNumber(), signUpRequest.getSpecialty(), signUpRequest.getIssuingDate());
+                // Build the Doctor entity
+                var doctor = Doctor.builder()
+                                .isVerified(false)
+                                .username(signUpRequest.getUsername())
+                                .license(license)
+                                .firstName(signUpRequest.getFirstName())
+                                .lastName(signUpRequest.getLastName())
+                                .password(passwordEncoder.encode(signUpRequest.getPassword()))
+                                .email(signUpRequest.getEmail())
+                                .role(Role.DOCTOR)
+                                .birthDate(signUpRequest.getDateOfBirth())
+                                .phoneNumber(signUpRequest.getPhoneNumber())
+                                .address(signUpRequest.getAddress())
+                                .age(calculateAge(signUpRequest.getDateOfBirth()))
+                                .createdAt(LocalDate.now())
+                                .build();
 
-        var doctor = Doctor.builder()
-                .isVerified(false)
-                .username(signUpRequest.getUsername())
-                .license(license)
-                .firstName(signUpRequest.getFirstName())
-                .lastName(signUpRequest.getLastName())
-                .password(passwordEncoder.encode(signUpRequest.getPassword()))
-                .email(signUpRequest.getEmail())
-                .role(Role.DOCTOR)
-                .birthDate(signUpRequest.getDateOfBirth())
-                .phoneNumber(signUpRequest.getPhoneNumber())
-                .address(signUpRequest.getAddress())
-                .age(calculateAge(signUpRequest.getDateOfBirth()))
-                .createdAt(LocalDate.now())
-                .build();
-        doctorRepository.save(doctor);
+                doctorRepository.save(doctor);
 
-        Map<String,Object> extraClaims = Map.of(
-                "role",doctor.getRole().name(),
-                "firstName",doctor.getFirstName(),
-                "lastName",doctor.getLastName(),
-                "username",doctor.getUsername(),
-                "email",doctor.getEmail()
-        );
-        var jwtToken = jwtService.generateToken(extraClaims,doctor);
-        return ResponseMessageDto.builder()
-                .message("Doctor registered successfully, Waiting for Liscense verification")
-                .success(true)
-                .statusCode(200)
-                .data(jwtToken)
-                .build();
-    }
+                // Prepare extra claims for JWT
+                Map<String, Object> extraClaims = Map.of(
+                                "role", doctor.getRole().name(),
+                                "firstName", doctor.getFirstName(),
+                                "lastName", doctor.getLastName(),
+                                "username", doctor.getUsername(),
+                                "email", doctor.getEmail());
+
+                var jwtToken = jwtService.generateToken(extraClaims, doctor);
+
+                return ResponseMessageDto.builder()
+                                .message("Doctor registered successfully, Waiting for License verification")
+                                .success(true)
+                                .statusCode(200)
+                                .data(jwtToken)
+                                .build();
+        }
 }

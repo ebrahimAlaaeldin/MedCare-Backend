@@ -1,13 +1,23 @@
 package com.example.medcare.Services;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import javax.print.Doc;
 
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.example.medcare.dto.DoctorDTO;
+import com.example.medcare.embedded.Address;
 import com.example.medcare.embedded.License;
 import com.example.medcare.entities.Clinic;
 import com.example.medcare.entities.Doctor;
@@ -24,77 +35,99 @@ import com.example.medcare.service.SuperAdminService;
 
 
 public class SuperAdminServiceTest {
-
-
-    @InjectMocks
-    private SuperAdminService superAdminServiceUnderTest;
-
     @Mock
     private DoctorRepository doctorRepository;
 
+    @InjectMocks
+    private SuperAdminService superAdminService;
+
+    private Doctor doctor;
+
 
     @BeforeEach
-    public void setUp() {
-        //superAdminServiceUnderTest = new SuperAdminService(doctorRepository);
-            MockitoAnnotations.openMocks(this);   
-    }
-    
-    @Test
-    public void testGetPendingApplications() {
-        // Setup
-        Doctor doctor1 = Doctor.builder().username("username").
-                firstName("firstName").lastName("lastName")
-                .email("email").phoneNumber("phoneNumber")
-                .
-                license(License.builder().Specialty("specialty").issuingDate(LocalDate.now())
-                        .licenseNumber("licenseNumber").build())
-                .clinics(List.of(Clinic.builder().name("name").build())).build();
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
 
-        Doctor doctor2 = Doctor.builder().username("username").
-                firstName("firstName").lastName("lastName")
-                .email("email").phoneNumber("phoneNumber")
-                .
-                license(License.builder().Specialty("specialty").issuingDate(LocalDate.now())
-                        .licenseNumber("licenseNumber").build())
-                .clinics(List.of(Clinic.builder().name("name").build())).build();
-
-        doctorRepository.save(doctor1);
+        // Setup Doctor object with a sample data
+        doctor = Doctor.builder()
+                .username("john_doe")
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@example.com")
+                .phoneNumber("1234567890")
+                .address(
+                    Address.builder()
+                            .street("123 Street")
+                            .city("City")
+                            .country("Country")
+                            .build()
+                )
+                .age(30)
+                .birthDate(LocalDate.of(1991, 5, 10))
+                .isVerified(false)
+                .license(new License("LIC123456", "General Medicine", LocalDate.of(2020, 1, 1)))
+                .build();
         
-
-        Optional<Doctor> drs = Optional.of(doctor1);
-                
-        when(doctorRepository.findAllByIsVerified(false)).thenReturn(drs);
-
         
-
-        // Run the test
-
-        List<DoctorDTO> result = superAdminServiceUnderTest.returnPendingApplications();
-
-        // Verify the results
-
     }
-    
 
-
+    // Test for returning pending applications with pending doctors
     @Test
-    public void testApproveDoctorApplication() {
-        // Setup
+    void testReturnPendingApplications_WithPendingDoctors() {
 
-        // Run the test
+        when(doctorRepository.findAllByIsVerified(false)).thenReturn(Optional.of(doctor));
 
-        // Verify the results
+        List<DoctorDTO> result = superAdminService.returnPendingApplications();
+
+        // Verify the result
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("john_doe", result.get(0).getUsername());
     }
 
-
+    // Test for returning pending applications with no pending doctors
     @Test
-    public void testShouldHandleNullsInPendingApplications() {
-        // Setup
+    void testReturnPendingApplications_NoPendingDoctors() {
+        // Mock the repository call to return an empty list
+        when(doctorRepository.findAllByIsVerified(false)).thenReturn(Optional.empty());
 
-        // Run the test
+        List<DoctorDTO> result = superAdminService.returnPendingApplications();
 
-        // Verify the results
+        // Verify the result
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 
-    
+    // Test for approving a doctor application with an existing doctor
+    @Test
+    void testApproveDoctorApplication_Success() {
+        // Mock the repository call to return a doctor by username
+        when(doctorRepository.findByUsername("john_doe")).thenReturn(Optional.of(doctor));
+
+        // Call the method to approve
+        superAdminService.approveDoctorApplication("john_doe");
+
+        // Verify that the doctor's `isVerified` flag was set to true
+        assertTrue(doctor.getIsVerified());
+
+        // Verify that save was called on the repository
+        verify(doctorRepository, times(1)).save(doctor);
+    }
+
+    // Test for approving a doctor application with a non-existing doctor
+    @Test
+    void testApproveDoctorApplication_DoctorNotFound() {
+        // Mock the repository call to return an empty optional
+        when(doctorRepository.findByUsername(" ")).thenReturn(Optional.empty());
+
+        // Call the method and verify that it throws a RuntimeException
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> 
+            superAdminService.approveDoctorApplication(" ")
+        );
+
+        // Verify the exception message
+        assertEquals("Doctor not found", exception.getMessage());
+
+    }
 }
+
