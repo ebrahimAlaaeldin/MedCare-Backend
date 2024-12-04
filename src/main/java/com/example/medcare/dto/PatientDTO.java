@@ -3,7 +3,7 @@ package com.example.medcare.dto;
 import java.time.LocalDate;
 
 import com.example.medcare.embedded.Address;
-import com.example.medcare.enums.Role;
+import com.example.medcare.Enums.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

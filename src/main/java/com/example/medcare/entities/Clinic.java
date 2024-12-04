@@ -29,9 +29,7 @@ public class Clinic {
     private Boolean isActive;
 
     private LocalDate createdAt;
-
     @OneToOne
     @JoinColumn(name = "clinicAdminId")
     private ClinicAdmin clinicAdmin;
-
 }

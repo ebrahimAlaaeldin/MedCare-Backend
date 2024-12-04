@@ -1,6 +1,6 @@
 package com.example.medcare.entities;
 
-import com.example.medcare.enums.Role;
+import com.example.medcare.Enums.Role;
 import com.example.medcare.embedded.Address;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -92,8 +92,9 @@ public class User implements UserDetails{
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Token> tokens;
-
-
-
-
 }
+
+
+
+
+

@@ -10,7 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.medcare.embedded.Address;
 import com.example.medcare.entities.User;
-import com.example.medcare.enums.Role;
+import com.example.medcare.Enums.Role;
 import com.example.medcare.repository.UserRepository;
 
 

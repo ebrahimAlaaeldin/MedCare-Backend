@@ -7,7 +7,7 @@ import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.embedded.Address;
 import com.example.medcare.entities.Doctor;
 import com.example.medcare.entities.Patient;
-import com.example.medcare.enums.Role;
+import com.example.medcare.Enums.Role;
 import com.example.medcare.repository.DoctorRepository;
 import com.example.medcare.repository.PatientRepository;
 import com.example.medcare.service.SignUpService;

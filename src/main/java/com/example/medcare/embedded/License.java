@@ -1,6 +1,4 @@
 package com.example.medcare.embedded;
-
-
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,5 +17,4 @@ public class License {
     private String licenseNumber;
     private String Specialty;
     private LocalDate issuingDate;
-
 }
