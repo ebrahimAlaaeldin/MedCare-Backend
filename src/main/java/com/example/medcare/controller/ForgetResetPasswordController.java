@@ -4,7 +4,6 @@ import com.example.medcare.dto.*;
 import com.example.medcare.repository.UserRepository;
 import com.example.medcare.service.ForgetResetPasswordService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -35,11 +34,11 @@ public class ForgetResetPasswordController {
 
     @PostMapping("/api/authenticate/forgetPassword")
     public ResponseMessageDto forgetPassword(@RequestBody ForgetPassEmail email) {
-        return forgetResetPasswordService.forgetPassword(email);
+        return forgetResetPasswordService.sendOTPtoEmail(email);
     }
     @PostMapping("/api/authenticate/forgetPassword/validatePin")
     public ResponseMessageDto validatePin(@RequestBody ValidateOTPDto otpValidationRequest) {
-        return forgetResetPasswordService.validatePin(otpValidationRequest);
+        return forgetResetPasswordService.validateOTP(otpValidationRequest);
     }
     @PostMapping("/api/authenticate/changePassword")
     public ResponseMessageDto changePassword(@RequestBody ChangePasswordDto changePass) {

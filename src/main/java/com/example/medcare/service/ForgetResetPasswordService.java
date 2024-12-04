@@ -54,19 +54,27 @@ public class ForgetResetPasswordService {
 
     }
 
-    public ResponseMessageDto forgetPassword(ForgetPassEmail email) {
+    public ResponseMessageDto sendOTPtoEmail(ForgetPassEmail email) {
         try {
 
             var user = userRepository.findByEmail(email.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
-            // create random pinNumber
+            // Create random OTP
             int otp = otpGenerator();
 
-            // send email to user
+            // Create HTML-formatted email body
             MailBody mailBody = MailBody.builder()
                     .to(user.getEmail())
-                    .subject("OTP For Forgot Password request")
-                    .body("Your password reset pin is: " + otp)
+                    .subject("Password Reset Request - OTP")
+                    .body(
+                            "<p>Dear " + user.getFirstName() + ",</p>" +
+                                    "<p>We received a request to reset your password for your MedCare account. " +
+                                    "Please use the <strong>One-Time Password (OTP)</strong> below to proceed with resetting your password. " +
+                                    "This OTP is valid for <strong>10 minutes</strong>.</p>" +
+                                    "<p style='font-size: 18px; font-weight: bold; color: #2b8cbe;'>Your OTP: " + otp + "</p>" +
+                                    "<p>If you did not request a password reset, please ignore this email or contact our support team for assistance.</p>" +
+                                    "<p>Best regards,<br>The MedCare Team</p>"
+                    )
                     .build();
 
             ForgotPassword fp = ForgotPassword.builder()
@@ -75,16 +83,18 @@ public class ForgetResetPasswordService {
                     .user(user)
                     .build();
 
-            emailService.setSimpleMessage(mailBody);
+            // Use the updated HTML email sending method
+            emailService.sendHtmlMessage(mailBody);
+
             forgotPasswordRepository.save(fp);
 
-
             return ResponseMessageDto.builder()
-                    .message("Password OTP  sent to your email")
+                    .message("Password OTP sent to your email")
                     .statusCode(200)
                     .success(true)
                     .data(null)
                     .build();
+
         } catch (Exception e) {
             return ResponseMessageDto.builder()
                     .message("Email not found")
@@ -100,7 +110,7 @@ public class ForgetResetPasswordService {
         return random.nextInt(100_000, 999_999);
     }
 
-    public ResponseMessageDto validatePin(ValidateOTPDto otpValidationRequest) {
+    public ResponseMessageDto validateOTP(ValidateOTPDto otpValidationRequest) {
         try {
             var user = userRepository.findByEmail(otpValidationRequest.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
