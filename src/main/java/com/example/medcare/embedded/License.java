@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class License {
 
     private String licenseNumber;

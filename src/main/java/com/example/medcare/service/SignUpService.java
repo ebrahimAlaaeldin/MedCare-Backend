@@ -1,19 +1,17 @@
 package com.example.medcare.service;
 
-import com.example.medcare.Authorization.AuthenticationResponse;
-import com.example.medcare.Enums.Role;
+import com.example.medcare.enums.Role;
 import com.example.medcare.config.JwtService;
+import com.example.medcare.dto.DoctorDTO;
+import com.example.medcare.dto.PatientDTO;
 import com.example.medcare.dto.ResponseMessageDto;
-import com.example.medcare.dto.SignUpRequest;
 
 import com.example.medcare.embedded.License;
 import com.example.medcare.entities.Doctor;
 import com.example.medcare.entities.Patient;
-import com.example.medcare.entities.Token;
 
 import com.example.medcare.repository.DoctorRepository;
 import com.example.medcare.repository.PatientRepository;
-import com.example.medcare.repository.TokenRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -35,40 +32,8 @@ public class SignUpService {
     private final DoctorRepository doctorRepository;
     private final PasswordEncoder passwordEncoder;
 
-
-
-
-    public ResponseMessageDto signUp(SignUpRequest signUpRequest) {
-        try {
-            var stringRole = signUpRequest.getRole().toLowerCase();
-
-            Role role = switch (stringRole) {
-                case "doctor" -> Role.DOCTOR;
-                case "patient" -> Role.PATIENT;
-                default -> throw new IllegalStateException("Unexpected value: " + stringRole);
-            };
-
-            ResponseMessageDto response = null;
-            if (role == Role.PATIENT) {
-                response = patientSignUp(signUpRequest);
-            } else {
-               response = doctorSignUp(signUpRequest);
-            }
-            return response;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseMessageDto.builder()
-                    .message("An error occurred")
-                    .success(false)
-                    .statusCode(500)
-                    .build();
-        }
-
-
-
-    }
-
-    private ResponseMessageDto patientSignUp(SignUpRequest signUpRequest) {
+    public ResponseMessageDto patientSignUp(PatientDTO signUpRequest) {
+        
             var patient = Patient.builder()
                     .username(signUpRequest.getUsername())
                     .insuranceId(signUpRequest.getInsuranceNumber())
@@ -82,9 +47,10 @@ public class SignUpService {
                     .address(signUpRequest.getAddress())
                     .age(calculateAge(signUpRequest.getDateOfBirth()))
                     .birthDate(signUpRequest.getDateOfBirth())
-                    .createdAt(LocalDate.now().atStartOfDay())
+                    .createdAt(LocalDate.now())
                     .build();
             patientRepository.save(patient);
+                
             Map<String,Object> extraClaims = Map.of(
                     "role",patient.getRole().name(),
                     "firstName",patient.getFirstName(),
@@ -104,8 +70,6 @@ public class SignUpService {
                     .build();
         }
 
-
-
     public int calculateAge(LocalDate dateOfBirth) {
         // Get the current date
         LocalDate currentDate = LocalDate.now();
@@ -117,10 +81,11 @@ public class SignUpService {
         return period.getYears();
     }
 
-    private ResponseMessageDto doctorSignUp(SignUpRequest signUpRequest) {
+    public ResponseMessageDto doctorSignUp(DoctorDTO signUpRequest) {
         License license = new License(signUpRequest.getLicenseNumber(), signUpRequest.getSpecialty(), signUpRequest.getIssuingDate());
 
         var doctor = Doctor.builder()
+                .isVerified(false)
                 .username(signUpRequest.getUsername())
                 .license(license)
                 .firstName(signUpRequest.getFirstName())
@@ -128,6 +93,7 @@ public class SignUpService {
                 .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .email(signUpRequest.getEmail())
                 .role(Role.DOCTOR)
+                .birthDate(signUpRequest.getDateOfBirth())
                 .phoneNumber(signUpRequest.getPhoneNumber())
                 .address(signUpRequest.getAddress())
                 .age(signUpRequest.getDateOfBirth().getYear())
@@ -143,12 +109,10 @@ public class SignUpService {
         );
         var jwtToken = jwtService.generateToken(extraClaims,doctor);
         return ResponseMessageDto.builder()
-                .message("Doctor registered successfully")
+                .message("Doctor registered successfully, Waiting for Liscense verification")
                 .success(true)
                 .statusCode(200)
                 .data(jwtToken)
                 .build();
     }
-
-
 }
