@@ -2,23 +2,22 @@ package com.example.medcare.entities;
 
 
 import jakarta.persistence.Entity;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @Entity
-@AllArgsConstructor
 @SuperBuilder
 public class Patient extends User {
 
 
-//    private String insurance;
+    //    private String insurance;
     private String insuranceId;
-//    private String insuranceGroup;
+    //    private String insuranceGroup;
 //
 //
 //   private String emergencyContactName;
@@ -27,3 +26,12 @@ public class Patient extends User {
 
 
 }
+
+
+
+
+
+
+
+
+

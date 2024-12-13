@@ -10,5 +10,5 @@ import lombok.Data;
 @Builder
 public class ValidateOTPDto {
     private String email;
-    private Integer otp;
+    private String otp;
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -76,11 +77,18 @@ public class ForgetResetPasswordService {
                                     "<p>Best regards,<br>The MedCare Team</p>"
                     )
                     .build();
+            Optional<ForgotPassword> existingForgotPassword = forgotPasswordRepository.findByUser(user);
 
+            if (existingForgotPassword.isPresent()) {
+                // If a forgot password entry exists, delete it to prevent multiple OTPs being generated
+                forgotPasswordRepository.delete(existingForgotPassword.get());
+            }
+
+// Create a new ForgotPassword object with a unique OTP and an expiration time of 10 minutes
             ForgotPassword fp = ForgotPassword.builder()
-                    .otp(otp)
-                    .expirationTime(new Date(System.currentTimeMillis() + 600_000)) // 10 minutes
-                    .user(user)
+                    .otp(otp)  // OTP to be sent to the user
+                    .expirationTime(new Date(System.currentTimeMillis() + 600_000))  // Expiration time (10 minutes from now)
+                    .user(user)  // Link the ForgotPassword object to the user
                     .build();
 
             // Use the updated HTML email sending method
@@ -114,8 +122,8 @@ public class ForgetResetPasswordService {
         try {
             var user = userRepository.findByEmail(otpValidationRequest.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
-
-            ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(otpValidationRequest.getOtp(), user)
+            Integer otp = Integer.parseInt(otpValidationRequest.getOtp());
+            ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(otp, user)
                     .orElseThrow(() -> new RuntimeException("OTP not found"));
 
             if (fp.getExpirationTime().before(Date.from(Instant.now()))) {
@@ -128,16 +136,8 @@ public class ForgetResetPasswordService {
                         .build();
             }
 
-            if (fp.getExpirationTime().before(new Date())) {
-                return ResponseMessageDto.builder()
-                        .message("OTP has expired")
-                        .statusCode(400)
-                        .success(false)
-                        .data(null)
-                        .build();
-            }
 
-
+            forgotPasswordRepository.delete(fp);
             return ResponseMessageDto.builder()
                     .message("Pin is valid")
                     .statusCode(200)

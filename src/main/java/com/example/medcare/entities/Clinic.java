@@ -1,12 +1,17 @@
 package com.example.medcare.entities;
 import com.example.medcare.embedded.Address;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
-import java.time.LocalDateTime;
 
+import java.time.LocalDate;
 @Entity
+@AllArgsConstructor
+@Builder
+@Data
 public class Clinic {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer clinicId;
@@ -21,14 +26,8 @@ public class Clinic {
 
     private Boolean isActive;
 
-    private LocalDateTime createdAt;
-
-
-
-
-
+    private LocalDate createdAt;
     @OneToOne
     @JoinColumn(name = "clinicAdminId")
     private ClinicAdmin clinicAdmin;
-
 }

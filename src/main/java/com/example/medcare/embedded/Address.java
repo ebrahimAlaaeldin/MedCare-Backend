@@ -1,6 +1,4 @@
 package com.example.medcare.embedded;
-
-
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
