@@ -8,9 +8,8 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 @Builder
-public class ResponseMessageDto {
+public class ResponseDTO {
     private String message;
-    private Boolean success;
     private Integer statusCode;
     private Object data;
 
