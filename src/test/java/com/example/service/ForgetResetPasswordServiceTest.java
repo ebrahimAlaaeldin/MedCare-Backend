@@ -1,3 +1,5 @@
+package com.example.service;
+
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.*;
 import com.example.medcare.entities.ForgotPassword;
@@ -96,11 +98,11 @@ public class ForgetResetPasswordServiceTest {
                 .build();
         ValidateOTPDto otpValidationRequest = ValidateOTPDto.builder()
                 .email("test@example.com")
-                .otp(123456)
+                .otp("123456")
                 .build();
 
         when(userRepository.findByEmail(otpValidationRequest.getEmail())).thenReturn(Optional.of(user));
-        when(forgotPasswordRepository.findByOtpAndUser(otpValidationRequest.getOtp(), user)).thenReturn(Optional.of(forgotPassword));
+        when(forgotPasswordRepository.findByOtpAndUser(Integer.valueOf(otpValidationRequest.getOtp()), user)).thenReturn(Optional.of(forgotPassword));
 
         // Run the test
         ResponseMessageDto response = forgetResetPasswordService.validateOTP(otpValidationRequest);
@@ -123,11 +125,11 @@ public class ForgetResetPasswordServiceTest {
                 .build();
         ValidateOTPDto otpValidationRequest = ValidateOTPDto.builder()
                 .email("test@example.com")
-                .otp(123456)
+                .otp("123456")
                 .build();
 
         when(userRepository.findByEmail(otpValidationRequest.getEmail())).thenReturn(Optional.of(user));
-        when(forgotPasswordRepository.findByOtpAndUser(otpValidationRequest.getOtp(), user)).thenReturn(Optional.of(forgotPassword));
+        when(forgotPasswordRepository.findByOtpAndUser(Integer.valueOf(otpValidationRequest.getOtp()), user)).thenReturn(Optional.of(forgotPassword));
 
         // Run the test
         ResponseMessageDto response = forgetResetPasswordService.validateOTP(otpValidationRequest);
