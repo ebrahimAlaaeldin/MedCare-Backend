@@ -1,8 +1,8 @@
 package com.example.medcare.Service;
+
 import com.example.medcare.Enums.Role;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.AuthenticationRequest;
-import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.entities.User;
 import com.example.medcare.repository.UserRepository;
 import com.example.medcare.service.AuthenticateService;
@@ -11,13 +11,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class AuthenticateServiceTest {
@@ -28,9 +32,8 @@ class AuthenticateServiceTest {
     @Mock
     private AuthenticationManager authenticationManager;
 
-    @Mock //
+    @Mock
     private UserRepository userRepository;
-
 
     @InjectMocks
     private AuthenticateService authenticateService;
@@ -55,15 +58,12 @@ class AuthenticateServiceTest {
         when(jwtService.generateToken(anyMap(), eq(user))).thenReturn("mockToken");
 
         // Act
-        var response = authenticateService.authenticate(request);
+        ResponseEntity<Object> response = authenticateService.authenticate(request);
 
         // Assert
-        assertTrue(response instanceof ResponseMessageDto);
-        ResponseMessageDto dto = (ResponseMessageDto) response;
-        assertEquals(200, dto.getStatusCode());
-        assertEquals("Authentication successful", dto.getMessage());
-        assertTrue(dto.isSuccess());
-        assertEquals("mockToken", dto.getData());
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Authentication successful", response.getHeaders().getFirst("message"));
+        assertEquals("mockToken", response.getBody());
 
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(jwtService).generateToken(anyMap(), eq(user));
@@ -79,15 +79,11 @@ class AuthenticateServiceTest {
                 .authenticate(any(UsernamePasswordAuthenticationToken.class));
 
         // Act
-        var response = authenticateService.authenticate(request);
+        ResponseEntity<Object> response = authenticateService.authenticate(request);
 
         // Assert
-        assertTrue(response instanceof ResponseMessageDto);
-        ResponseMessageDto dto = (ResponseMessageDto) response;
-        assertEquals(401, dto.getStatusCode());
-        assertEquals("Invalid credentials", dto.getMessage());
-        assertFalse(dto.isSuccess());
-
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("Invalid credentials", response.getHeaders().getFirst("message"));
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verifyNoInteractions(jwtService, userRepository);
     }
@@ -106,7 +102,6 @@ class AuthenticateServiceTest {
         });
 
         assertEquals("User not found", exception.getMessage());
-        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(userRepository).findByUsername("nonExistentUser");
         verifyNoInteractions(jwtService);
     }

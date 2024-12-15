@@ -1,6 +1,5 @@
 package com.example.medcare.service;
 
-import com.example.medcare.dto.ResetPasswordDto;
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.dto.TokenThirdPartyDto;
 import org.springframework.stereotype.Service;
