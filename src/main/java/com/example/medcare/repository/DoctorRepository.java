@@ -12,4 +12,5 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
 
     Optional<Doctor> findAllByIsVerified(Boolean isVerified);
     Optional<Doctor> findByUsername(String username);
+    Optional<Doctor> findById(Integer id);
 }
