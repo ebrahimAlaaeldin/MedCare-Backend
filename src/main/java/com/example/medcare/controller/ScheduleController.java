@@ -2,6 +2,7 @@ package com.example.medcare.controller;
 
 
 import com.example.medcare.dto.AppointmentDTO;
+import com.example.medcare.dto.CancelDTO;
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.entities.Appointment;
 import com.example.medcare.service.ScheduleAppointmentService;
@@ -30,9 +31,8 @@ public class ScheduleController {
     }
     @PostMapping("/cancel")
     public ResponseEntity<ResponseMessageDto> cancelAppointment(
-            @RequestBody int id) {
-
+            @RequestBody CancelDTO requestForCancelations) {
         // Cancel an appointment
-        return ResponseEntity.ok(scheduleAppointmentService.cancelAppointment(id));
+        return ResponseEntity.ok(scheduleAppointmentService.cancelAppointment(requestForCancelations));
     }
 }

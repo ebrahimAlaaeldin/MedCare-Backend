@@ -1,6 +1,7 @@
 package com.example.medcare.service;
 
 import com.example.medcare.dto.AppointmentDTO;
+import com.example.medcare.dto.CancelDTO;
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.entities.Appointment;
 import com.example.medcare.repository.AppointmentRepository;
@@ -74,10 +75,10 @@ public class ScheduleAppointmentService {
         .statusCode(200)
         .build();
     }
-    public ResponseMessageDto cancelAppointment(int id){
+    public ResponseMessageDto cancelAppointment(CancelDTO cancelDTO){
 
         //check if appointment exists
-        var appointment = appointmentRepository.findById(id);
+        var appointment = appointmentRepository.findById(cancelDTO.getAppointmentId());
 
         if(appointment.isEmpty()){
 
