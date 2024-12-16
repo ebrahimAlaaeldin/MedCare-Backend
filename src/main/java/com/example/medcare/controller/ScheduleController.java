@@ -28,4 +28,11 @@ public class ScheduleController {
         // Schedule an appointment
         return ResponseEntity.ok(scheduleAppointmentService.scheduleAppointment(requestForAppointment));
     }
+    @PostMapping("/cancel")
+    public ResponseEntity<ResponseMessageDto> cancelAppointment(
+            @RequestBody int id) {
+
+        // Cancel an appointment
+        return ResponseEntity.ok(scheduleAppointmentService.cancelAppointment(id));
+    }
 }

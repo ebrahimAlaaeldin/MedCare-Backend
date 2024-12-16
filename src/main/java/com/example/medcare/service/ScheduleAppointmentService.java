@@ -74,4 +74,30 @@ public class ScheduleAppointmentService {
         .statusCode(200)
         .build();
     }
+    public ResponseMessageDto cancelAppointment(int id){
+
+        //check if appointment exists
+        var appointment = appointmentRepository.findById(id);
+
+        if(appointment.isEmpty()){
+
+            return ResponseMessageDto.builder()
+            .message("Appointment Not Found")
+            .success(false)
+            .statusCode(401)
+            .build();
+        }
+
+        //cancel appointment
+        appointment.get().setCancelled(true);
+
+        //save to database
+        appointmentRepository.save(appointment.get());
+
+        return ResponseMessageDto.builder()
+        .message("Appointment Cancelled Successfully")
+        .success(true)
+        .statusCode(200)
+        .build();
+    }
 }
