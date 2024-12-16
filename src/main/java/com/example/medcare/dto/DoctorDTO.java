@@ -3,6 +3,7 @@ package com.example.medcare.dto;
 import java.time.LocalDate;
 
 
+import com.example.medcare.Enums.Gender;
 import com.example.medcare.embedded.Address;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,13 +27,10 @@ public class DoctorDTO {
     private Address address;
     private Integer age;
     private LocalDate dateOfBirth;  // Format example: 1999-12-31
-
     // private List<String> ClinicNames;
-
     private String licenseNumber;
-
     private String Specialty;
-
     private LocalDate issuingDate;
+    private Gender gender;
     
 }

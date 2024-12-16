@@ -2,6 +2,7 @@ package com.example.medcare.dto;
 
 import java.time.LocalDate;
 
+import com.example.medcare.Enums.Gender;
 import com.example.medcare.embedded.Address;
 import com.example.medcare.Enums.Role;
 
@@ -30,6 +31,7 @@ public class PatientDTO {
 
     private String insuranceNumber;
     private String emergencyContactNumber;
+    private Gender gender;
 
 }
 
