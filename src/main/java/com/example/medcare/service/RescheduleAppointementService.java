@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.medcare.dto.AppointmentDTO;
 import com.example.medcare.dto.ResponseMessageDto;
+import com.example.medcare.entities.Appointment;
 import com.example.medcare.repository.AppointmentRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,16 @@ public class RescheduleAppointementService {
     private final AppointmentRepository appointmentRepository;
 
     public ResponseEntity<Object> rescheduleAppointment(AppointmentDTO newAppointmentTime) {
-        var appointment = appointmentRepository.findByAppointmentId(newAppointmentTime.getAppointmentId());
+        var  appointment = appointmentRepository.findByAppointmentId(newAppointmentTime.getAppointmentId());
+        if(appointment==null){
+            return ResponseEntity.status(404).body(ResponseMessageDto.builder()
+                    .message("Appointment Not Found")
+                    .success(false)
+                    .statusCode(404)
+                    .build());
+        }
+
+
         boolean existsAnAppointment = appointmentRepository
                 .existsByDoctorIdAndAppointmentTime(appointment.getDoctor().getId(), newAppointmentTime.getAppointmentTime());
                 if (!existsAnAppointment) {
@@ -27,6 +37,9 @@ public class RescheduleAppointementService {
                             .statusCode(200)
                             .build());
         }
+
+
+
         System.out.println("Appointment Time Not Available");
         return ResponseEntity.status(409).body(ResponseMessageDto.builder()
                 .message("Appointment Time Not Available")
@@ -34,4 +47,5 @@ public class RescheduleAppointementService {
                 .statusCode(409)
                 .build());
     }
+    
 }
