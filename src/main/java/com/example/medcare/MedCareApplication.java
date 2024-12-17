@@ -1,8 +1,6 @@
 package com.example.medcare;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,7 +11,6 @@ import com.example.medcare.embedded.Address;
 import com.example.medcare.entities.User;
 import com.example.medcare.Enums.Role;
 import com.example.medcare.repository.UserRepository;
-
 
 @SpringBootApplication
 public class MedCareApplication {
@@ -44,10 +41,7 @@ public class MedCareApplication {
             .country("Country")
             .build())
             .build();
-                            
             userRepository.save(superAdmin);
-
         };
-
     }
 }

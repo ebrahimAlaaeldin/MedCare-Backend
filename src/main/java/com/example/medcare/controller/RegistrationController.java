@@ -1,9 +1,10 @@
 package com.example.medcare.controller;
 
 import com.example.medcare.dto.AuthenticationRequest;
+import com.example.medcare.dto.ClinicAdminDTO;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.PatientDTO;
-import com.example.medcare.dto.ResponseMessageDto;
+import com.example.medcare.dto.ResponseDTO;
 
 import com.example.medcare.service.AuthenticateService;
 import com.example.medcare.service.SignUpService;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/authenticate")
-@RequiredArgsConstructor //lombok annotation to create a constructor with all the required fields
+@RequiredArgsConstructor 
 @Getter
  
 @CrossOrigin
@@ -34,13 +35,13 @@ RegistrationController {
     private final AuthenticateService authenticateService;
 
     @PostMapping("/register/patient")
-    public ResponseEntity<ResponseMessageDto> registerUser(@RequestBody PatientDTO request) {
+    public ResponseEntity<ResponseDTO> registerUser(@RequestBody PatientDTO request) {
         System.out.println("request = " + request);
         return ResponseEntity.ok(signUpService.patientSignUp(request));
     }
 
     @PostMapping("/register/doctor")
-    public ResponseEntity<ResponseMessageDto> registerDoctor(@RequestBody DoctorDTO request) {
+    public ResponseEntity<ResponseDTO> registerDoctor(@RequestBody DoctorDTO request) {
 
         return ResponseEntity.ok(signUpService.doctorSignUp(request));
     }
@@ -48,6 +49,12 @@ RegistrationController {
     @PostMapping("/login")
     public ResponseEntity<Object> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticateService.authenticate(request));
+    }
+
+
+    @PostMapping("/register/admin")
+    public ResponseEntity<ResponseDTO> registerAdmin(@RequestBody ClinicAdminDTO request) {
+        return signUpService.adminSignUp(request);
     }
 
 

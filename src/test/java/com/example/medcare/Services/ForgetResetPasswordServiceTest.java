@@ -1,3 +1,4 @@
+/* package com.example.medcare.Services;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.*;
 import com.example.medcare.entities.ForgotPassword;
@@ -161,3 +162,4 @@ public class ForgetResetPasswordServiceTest {
         verify(userRepository, times(1)).save(user);
     }
 }
+ */

@@ -4,7 +4,7 @@ import com.example.medcare.controller.RegistrationController;
 import com.example.medcare.dto.AuthenticationRequest;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.PatientDTO;
-import com.example.medcare.dto.ResponseMessageDto;
+import com.example.medcare.dto.ResponseDTO;
 import com.example.medcare.service.AuthenticateService;
 import com.example.medcare.service.SignUpService;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +35,7 @@ class RegistrationControllerTest {
 
     private PatientDTO patientDTO;
     private DoctorDTO doctorDTO;
-    private ResponseMessageDto successResponse;
+    private ResponseDTO successResponse;
 
     @BeforeEach
     void setUp() {
@@ -69,7 +69,7 @@ class RegistrationControllerTest {
                 .issuingDate(null) // Assuming it's set internally
                 .build();
 
-        successResponse = ResponseMessageDto.builder()
+        successResponse = ResponseDTO.builder()
                 .message("Authentication successfull")
                 .success(true)
                 .statusCode(200)
@@ -104,7 +104,7 @@ class RegistrationControllerTest {
     @Test
     void testRegisterPatient_Failed() throws Exception {
         // Mock the response of signUpService for invalid patient registration
-        ResponseMessageDto errorResponse = ResponseMessageDto.builder()
+        ResponseDTO errorResponse = ResponseDTO.builder()
                 .message("Invalid signup request")
                 .success(false)
                 .statusCode(400)
@@ -147,7 +147,7 @@ class RegistrationControllerTest {
     @Test
     void testRegisterDoctor_Failed() throws Exception {
         // Mock the response of signUpService for invalid doctor registration
-        ResponseMessageDto errorResponse = ResponseMessageDto.builder()
+        ResponseDTO errorResponse = ResponseDTO.builder()
                 .message("Invalid signup request")
                 .success(false)
                 .statusCode(400)
@@ -185,7 +185,7 @@ class RegistrationControllerTest {
 
         // Mock the authenticationService response for failed login
         when(authenticateService.authenticate(any(AuthenticationRequest.class)))
-                .thenReturn(ResponseMessageDto.builder()
+                .thenReturn(ResponseDTO.builder()
                         .message("Invalid credentials")
                         .success(false)
                         .statusCode(401)

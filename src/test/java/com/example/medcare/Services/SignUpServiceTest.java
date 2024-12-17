@@ -3,7 +3,7 @@ package com.example.medcare.Services;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.PatientDTO;
-import com.example.medcare.dto.ResponseMessageDto;
+import com.example.medcare.dto.ResponseDTO;
 import com.example.medcare.embedded.Address;
 import com.example.medcare.entities.Doctor;
 import com.example.medcare.entities.Patient;
@@ -12,7 +12,6 @@ import com.example.medcare.repository.DoctorRepository;
 import com.example.medcare.repository.PatientRepository;
 import com.example.medcare.service.SignUpService;
 
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -94,7 +93,7 @@ public class SignUpServiceTest {
         Mockito.when(patientRepository.save(any(Patient.class))).thenReturn(new Patient());
         Mockito.when(jwtService.generateToken(any(), any(Patient.class))).thenReturn("jwt-token");
 
-        ResponseMessageDto response = signUpService.patientSignUp(patientDTO);
+        ResponseDTO response = signUpService.patientSignUp(patientDTO);
 
         // Verify the response
         assertNotNull(response);
@@ -108,7 +107,7 @@ public class SignUpServiceTest {
         // Mock invalid patientDTO with missing fields
         patientDTO.setUsername(null);               
 
-        ResponseMessageDto response = signUpService.patientSignUp(patientDTO);
+        ResponseDTO response = signUpService.patientSignUp(patientDTO);
 
         // Verify the response for invalid signup
         assertNotNull(response);
@@ -123,7 +122,7 @@ public class SignUpServiceTest {
         Mockito.when(doctorRepository.save(any(Doctor.class))).thenReturn(new Doctor());
         Mockito.when(jwtService.generateToken(any(), any(Doctor.class))).thenReturn("jwt-token");
 
-        ResponseMessageDto response = signUpService.doctorSignUp(doctorDTO);
+        ResponseDTO response = signUpService.doctorSignUp(doctorDTO);
 
         // Verify the response
         assertNotNull(response);
@@ -138,7 +137,7 @@ public class SignUpServiceTest {
         doctorDTO.setUsername(null);
 
         // Call the doctor sign-up method with invalid DTO
-        ResponseMessageDto response = signUpService.doctorSignUp(doctorDTO);
+        ResponseDTO response = signUpService.doctorSignUp(doctorDTO);
 
         // Verify the response for invalid signup
         assertNotNull(response);

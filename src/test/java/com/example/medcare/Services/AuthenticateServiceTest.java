@@ -1,8 +1,8 @@
-package com.example.medcare.Service;
+package com.example.medcare.Services;
 import com.example.medcare.Enums.Role;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.AuthenticationRequest;
-import com.example.medcare.dto.ResponseMessageDto;
+import com.example.medcare.dto.ResponseDTO;
 import com.example.medcare.entities.User;
 import com.example.medcare.repository.UserRepository;
 import com.example.medcare.service.AuthenticateService;
@@ -58,8 +58,8 @@ class AuthenticateServiceTest {
         var response = authenticateService.authenticate(request);
 
         // Assert
-        assertTrue(response instanceof ResponseMessageDto);
-        ResponseMessageDto dto = (ResponseMessageDto) response;
+        assertTrue(response instanceof ResponseDTO);
+        ResponseDTO dto = (ResponseDTO) response;
         assertEquals(200, dto.getStatusCode());
         assertEquals("Authentication successful", dto.getMessage());
         assertTrue(dto.isSuccess());
@@ -82,8 +82,8 @@ class AuthenticateServiceTest {
         var response = authenticateService.authenticate(request);
 
         // Assert
-        assertTrue(response instanceof ResponseMessageDto);
-        ResponseMessageDto dto = (ResponseMessageDto) response;
+        assertTrue(response instanceof ResponseDTO);
+        ResponseDTO dto = (ResponseDTO) response;
         assertEquals(401, dto.getStatusCode());
         assertEquals("Invalid credentials", dto.getMessage());
         assertFalse(dto.isSuccess());
