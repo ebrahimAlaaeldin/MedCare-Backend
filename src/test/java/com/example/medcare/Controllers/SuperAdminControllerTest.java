@@ -4,9 +4,7 @@ import com.example.medcare.controller.SuperAdminController;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.service.SuperAdminService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.apache.catalina.connector.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -28,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class SuperAdminControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
     @Mock

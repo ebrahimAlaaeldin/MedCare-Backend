@@ -1,5 +1,6 @@
 package com.example.medcare.entities;
 
+import com.example.medcare.Enums.Gender;
 import com.example.medcare.Enums.Role;
 import com.example.medcare.embedded.Address;
 import jakarta.persistence.*;
@@ -56,6 +57,9 @@ public class User implements UserDetails{
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     private LocalDate createdAt;
 

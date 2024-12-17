@@ -20,14 +20,9 @@ import java.util.List;
 public class Patient extends User {
 
 
-    //    private String insurance;
     private String insuranceId;
-    //    private String insuranceGroup;
-//
-//
-//   private String emergencyContactName;
     private String emergencyContactPhone;
-//    private String emergencyContactRelation;
+
 
     @OneToMany(mappedBy = "patient",cascade = CascadeType.ALL,orphanRemoval = true) //orphanRemoval = true means that if the patient is deleted, all of his appointments will be deleted as well
     private List<Appointment> appointments;
