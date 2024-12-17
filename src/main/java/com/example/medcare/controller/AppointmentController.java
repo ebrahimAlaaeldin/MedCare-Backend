@@ -24,13 +24,5 @@ public class AppointmentController {
     public ResponseEntity<Object> scheduleAppointment(
             @RequestBody AppointmentDTO requestForAppointment) {
 
-        if(requestForAppointment.getPatientId() == null || requestForAppointment.getDoctorId() == null || requestForAppointment.getAppointmentTime() == null) {
-            return ResponseEntity.badRequest().body(ResponseMessageDto.builder()
-                    .message("Please provide all the required fields")
-                    .success(false)
-                    .statusCode(400)
-                    .build());
-        }
-
         return scheduleAppointmentService.scheduleAppointment(requestForAppointment);       }
 }

@@ -22,14 +22,24 @@ public class ScheduleAppointmentService {
 
 
     public ResponseEntity<Object> scheduleAppointment(AppointmentDTO appointmentDTO){
-
+        
         if(appointmentDTO == null){
-                return ResponseEntity.status(400).body(ResponseMessageDto.builder()
-                .message("Invalid Request")
-                .success(false)
-                .statusCode(400)
-                .build());
+            return ResponseEntity.status(400).body(ResponseMessageDto.builder()
+            .message("Invalid Request")
+            .success(false)
+            .statusCode(400)
+            .build());
         }
+        
+        if(appointmentDTO.getPatientId() == null || appointmentDTO.getDoctorId() == null || appointmentDTO.getAppointmentTime() == null) {
+            return ResponseEntity.badRequest().body(ResponseMessageDto.builder()
+                    .message("Please provide all the required fields")
+                    .success(false)
+                    .statusCode(400)
+                    .build());
+        }
+
+
 
         Appointment appointment = new Appointment();
 
