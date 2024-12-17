@@ -25,6 +25,7 @@ public class DoctorDTO {
     private String email;
     private String phoneNumber;
     private Address address;
+
     private Integer age;
     private LocalDate dateOfBirth;  // Format example: 1999-12-31
 
