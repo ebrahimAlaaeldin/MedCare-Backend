@@ -46,7 +46,7 @@ public class ReminderService {
                     String normalizedAppointmentTime = appointment.getAppointmentTime();
 
                     LocalDateTime appointmentDateTime = LocalDateTime.parse(normalizedAppointmentTime, formatter);
-
+                    // Add if it is confirmed first
                     if (!appointment.isReminded() &&LocalDateTime.now().plusDays(1).toLocalDate().isEqual(appointmentDateTime.toLocalDate())) {
                         appointment.setReminded(true);
                         MailBody mailBody = MailBody.builder()
@@ -68,6 +68,7 @@ public class ReminderService {
                                 )
                                 .build();
                         emailService.sendHtmlMessage(mailBody);
+                        appointmentRepository.save(appointment);
                     }
 
                 } catch (Exception e) {
