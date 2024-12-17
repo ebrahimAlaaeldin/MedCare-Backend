@@ -1,4 +1,4 @@
-package com.example.medcare.Services;
+package com.example.medcare.service;
 
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.DoctorDTO;

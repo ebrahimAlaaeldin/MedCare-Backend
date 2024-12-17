@@ -1,4 +1,4 @@
-package com.example.medcare.Service;
+package com.example.medcare.service;
 import com.example.medcare.Enums.Role;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.AuthenticationRequest;

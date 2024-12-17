@@ -1,4 +1,4 @@
-package com.example.medcare.Services;
+package com.example.medcare.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
