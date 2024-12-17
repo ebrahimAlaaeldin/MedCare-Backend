@@ -2,7 +2,7 @@ package com.example.medcare.Controllers;
 
 import com.example.medcare.controller.SuperAdminController;
 import com.example.medcare.dto.DoctorDTO;
-import com.example.medcare.dto.ResponseMessageDto;
+import com.example.medcare.dto.ResponseDTO;
 import com.example.medcare.service.SuperAdminService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -39,8 +39,8 @@ class SuperAdminControllerTest {
 
     private DoctorDTO doctorDTO;
 
-    private ResponseMessageDto successResponse;
-    private ResponseMessageDto notFoundResponse;
+    private ResponseDTO successResponse;
+    private ResponseDTO notFoundResponse;
 
     @BeforeEach
     void setUp() {
@@ -55,14 +55,14 @@ class SuperAdminControllerTest {
         doctorDTO.setEmail("john.doe@example.com");
         doctorDTO.setPhoneNumber("1234567890");
 
-         successResponse = ResponseMessageDto
+         successResponse = ResponseDTO
                 .builder()
                  .message("Doctor application approved")
                     .success(true)
                         .statusCode(200)
                 .build();
 
-         notFoundResponse = ResponseMessageDto
+         notFoundResponse = ResponseDTO
                 .builder()
                  .message("Doctor not found")
                  .success(false)

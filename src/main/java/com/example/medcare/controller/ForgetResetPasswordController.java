@@ -20,7 +20,7 @@ public class ForgetResetPasswordController {
     private final UserRepository userRepository;
 
     @PostMapping("/resetPassword")
-    public ResponseMessageDto resetPassword(
+    public ResponseDTO resetPassword(
             @RequestBody ResetPasswordDto input,
             @RequestHeader("Authorization") String authorizationHeader) {
 
@@ -37,15 +37,15 @@ public class ForgetResetPasswordController {
 
 
     @PostMapping("/api/authenticate/forgetPassword")
-    public ResponseMessageDto forgetPassword(@RequestBody ForgetPassEmail email) {
+    public ResponseDTO forgetPassword(@RequestBody ForgetPassEmail email) {
         return forgetResetPasswordService.sendOTPtoEmail(email);
     }
     @PostMapping("/api/authenticate/forgetPassword/validatePin")
-    public ResponseMessageDto validatePin(@RequestBody ValidateOTPDto otpValidationRequest) {
+    public ResponseDTO validatePin(@RequestBody ValidateOTPDto otpValidationRequest) {
         return forgetResetPasswordService.validateOTP(otpValidationRequest);
     }
     @PostMapping("/api/authenticate/changePassword")
-    public ResponseMessageDto changePassword(@RequestBody ChangePasswordDto changePass) {
+    public ResponseDTO changePassword(@RequestBody ChangePasswordDto changePass) {
         return forgetResetPasswordService.changePassword(changePass);
     }
 }

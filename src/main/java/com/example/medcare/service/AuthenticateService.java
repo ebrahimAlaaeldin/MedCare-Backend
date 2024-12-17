@@ -3,7 +3,7 @@ package com.example.medcare.service;
 
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.AuthenticationRequest;
-import com.example.medcare.dto.ResponseMessageDto;
+import com.example.medcare.dto.ResponseDTO;
 
 import com.example.medcare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class AuthenticateService {
             );
         }
         catch (Exception e) {
-            Object response = ResponseMessageDto.builder()
+            Object response = ResponseDTO.builder()
                     .message("Invalid credentials")
                     .success(false)
                     .statusCode(401)
@@ -53,7 +53,7 @@ public class AuthenticateService {
                 ;
         var token = jwtService.generateToken(claims, user);
 
-        return ResponseMessageDto.builder()
+        return ResponseDTO.builder()
                 .message("Authentication successful")
                 .success(true)
                 .statusCode(200)
