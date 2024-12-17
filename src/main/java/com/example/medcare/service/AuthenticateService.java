@@ -1,13 +1,16 @@
 package com.example.medcare.service;
 
 
+import com.example.medcare.Authorization.AuthenticationResponse;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.AuthenticationRequest;
-import com.example.medcare.dto.ResponseDTO;
+import com.example.medcare.dto.ResponseMessageDto;
 
 import com.example.medcare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -24,15 +27,31 @@ public class AuthenticateService {
     private final UserRepository userRepository;
         
 
-    public Object authenticate(AuthenticationRequest request) {
+    public ResponseEntity<Object> authenticate(AuthenticationRequest request) {
         try {
+            String username;
+            User user;
+            // handling the password in the front end
+            if(request.getEmail() == null  && request.getUsername() != null){
+                username = request.getUsername();
+                user = userRepository.findByUsername(username)
+                        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            }
+            else if(request.getUsername() == null && request.getEmail() != null){
+                user = userRepository.findByEmail(request.getEmail())
+                        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                username = user.getUsername();
+            }
+            else {
+                throw new IllegalArgumentException("Invalid request");
+            }
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(username,request.getPassword())
 
             );
         }
         catch (Exception e) {
-            Object response = ResponseDTO.builder()
+            Object response = ResponseMessageDto.builder()
                     .message("Invalid credentials")
                     .success(false)
                     .statusCode(401)
@@ -53,7 +72,7 @@ public class AuthenticateService {
                 ;
         var token = jwtService.generateToken(claims, user);
 
-        return ResponseDTO.builder()
+        return ResponseMessageDto.builder()
                 .message("Authentication successful")
                 .success(true)
                 .statusCode(200)

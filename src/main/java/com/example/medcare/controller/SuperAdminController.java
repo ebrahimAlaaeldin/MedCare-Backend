@@ -42,6 +42,7 @@ public class SuperAdminController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         else
             return new ResponseEntity<>(pendingApplications, HttpStatus.OK);
+        
     }
 
     // approve doctor application

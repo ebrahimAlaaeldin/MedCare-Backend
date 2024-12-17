@@ -1,9 +1,9 @@
 package com.example.medcare.Services;
 
-import com.example.medcare.config.JwtService;
+import com.example.medcare.controller.RegistrationController;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.PatientDTO;
-import com.example.medcare.dto.ResponseDTO;
+import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.embedded.Address;
 import com.example.medcare.entities.Doctor;
 import com.example.medcare.entities.Patient;
@@ -12,88 +12,76 @@ import com.example.medcare.repository.DoctorRepository;
 import com.example.medcare.repository.PatientRepository;
 import com.example.medcare.service.SignUpService;
 
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.mockito.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDate;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class SignUpServiceTest {
 
-    @InjectMocks
+
+    private MockMvc mockMvc;
+
+    @Mock
     private SignUpService signUpService;
 
     @Mock
-    private PatientRepository patientRepository;
+    private AuthenticateService authenticateService;
 
-    @Mock
-    private DoctorRepository doctorRepository;
+    @InjectMocks
+    private RegistrationController registrationController;
 
-    @Mock
-    private JwtService jwtService;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    
     private PatientDTO patientDTO;
     private DoctorDTO doctorDTO;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(registrationController).build();
 
-        // Initialize test data
+        // Set up mock objects
         patientDTO = PatientDTO.builder()
-                .username("patient123")
+                .username("john_doe")
                 .firstName("John")
                 .lastName("Doe")
                 .password("password123")
                 .email("john.doe@example.com")
                 .phoneNumber("1234567890")
-                .address(
-                    Address.builder()
-                        .street("123 Street")
-                        .city("City")
-                        .country("Country")
-                        .build()
-                )
-                .role(Role.PATIENT)
-                .age(30)
-                .dateOfBirth(LocalDate.of(1991, 5, 10))
                 .insuranceNumber("INS123456")
                 .emergencyContactNumber("9876543210")
                 .build();
 
         doctorDTO = DoctorDTO.builder()
-                .username("doctor123")
+                .username("dr_jane")
                 .firstName("Jane")
                 .lastName("Smith")
                 .password("password123")
-                .email("jane.smith@example.com")
-                .phoneNumber("0987654321")
-                .age(40)
-                .dateOfBirth(LocalDate.of(1981, 7, 20))
-                .licenseNumber("LIC123")
+                .email("dr.jane@example.com")
+                .phoneNumber("9876543210")
+                .licenseNumber("LIC123456")
                 .Specialty("Cardiology")
-                .issuingDate(LocalDate.of(2010, 1, 1))
                 .build();
     }
 
+    // Test successful doctor registration
     @Test
     void testPatientSignUp_Success() {
         // Mock necessary repository methods
         Mockito.when(patientRepository.save(any(Patient.class))).thenReturn(new Patient());
         Mockito.when(jwtService.generateToken(any(), any(Patient.class))).thenReturn("jwt-token");
 
-        ResponseDTO response = signUpService.patientSignUp(patientDTO);
+        ResponseMessageDto response = signUpService.patientSignUp(patientDTO);
 
         // Verify the response
         assertNotNull(response);
@@ -102,12 +90,13 @@ public class SignUpServiceTest {
         assertEquals("Patient registered successfully", response.getMessage());
     }
 
+    // Test failed doctor registration (missing fields)
     @Test
     void testPatientSignUp_InvalidRequest() {
         // Mock invalid patientDTO with missing fields
         patientDTO.setUsername(null);               
 
-        ResponseDTO response = signUpService.patientSignUp(patientDTO);
+        ResponseMessageDto response = signUpService.patientSignUp(patientDTO);
 
         // Verify the response for invalid signup
         assertNotNull(response);
@@ -122,7 +111,7 @@ public class SignUpServiceTest {
         Mockito.when(doctorRepository.save(any(Doctor.class))).thenReturn(new Doctor());
         Mockito.when(jwtService.generateToken(any(), any(Doctor.class))).thenReturn("jwt-token");
 
-        ResponseDTO response = signUpService.doctorSignUp(doctorDTO);
+        ResponseMessageDto response = signUpService.doctorSignUp(doctorDTO);
 
         // Verify the response
         assertNotNull(response);
@@ -137,7 +126,7 @@ public class SignUpServiceTest {
         doctorDTO.setUsername(null);
 
         // Call the doctor sign-up method with invalid DTO
-        ResponseDTO response = signUpService.doctorSignUp(doctorDTO);
+        ResponseMessageDto response = signUpService.doctorSignUp(doctorDTO);
 
         // Verify the response for invalid signup
         assertNotNull(response);
@@ -145,5 +134,4 @@ public class SignUpServiceTest {
         assertEquals(400, response.getStatusCode());
         assertEquals("Invalid sign up request", response.getMessage());
     }
-   
 }

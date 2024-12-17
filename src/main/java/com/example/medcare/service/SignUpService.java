@@ -1,27 +1,25 @@
 package com.example.medcare.service;
 
+import com.example.medcare.Authorization.AuthenticationResponse;
 import com.example.medcare.Enums.Role;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.ClinicAdminDTO;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.PatientDTO;
-import com.example.medcare.dto.ResponseDTO;
-import com.example.medcare.embedded.Address;
+import com.example.medcare.dto.ResponseMessageDto;
+
 import com.example.medcare.embedded.License;
 import com.example.medcare.entities.Clinic;
 import com.example.medcare.entities.ClinicAdmin;
 import com.example.medcare.entities.Doctor;
 import com.example.medcare.entities.Patient;
-import com.example.medcare.repository.ClinicAdminRepository;
+
 import com.example.medcare.repository.DoctorRepository;
 import com.example.medcare.repository.PatientRepository;
-
 import lombok.RequiredArgsConstructor;
-import lombok.var;
-
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -39,12 +37,12 @@ public class SignUpService {
     private final ClinicAdminRepository clinicAdminRepository;
 
 
-    public ResponseDTO patientSignUp(PatientDTO signUpRequest) {
+    public ResponseMessageDto patientSignUp(PatientDTO signUpRequest) {
                 // Validate required fields
                 if (signUpRequest.getUsername() == null || signUpRequest.getUsername().isEmpty() ||
                                 signUpRequest.getPassword() == null || signUpRequest.getPassword().isEmpty() ||
                                 signUpRequest.getEmail() == null || signUpRequest.getEmail().isEmpty()) {
-                        return ResponseDTO.builder()
+                        return ResponseMessageDto.builder()
                                         .message("Invalid sign up request")
                                         .success(false)
                                         .statusCode(400)
@@ -53,7 +51,7 @@ public class SignUpService {
             
 
 
-        Patient patient = Patient.builder()
+        var patient = Patient.builder()
                 .username(signUpRequest.getUsername())
                 .insuranceId(signUpRequest.getInsuranceNumber())
                 .emergencyContactPhone(signUpRequest.getEmergencyContactNumber())
@@ -67,10 +65,10 @@ public class SignUpService {
                 .age(calculateAge(signUpRequest.getDateOfBirth()))
                 .birthDate(signUpRequest.getDateOfBirth())
                 .createdAt(LocalDate.now())
+                .gender(signUpRequest.getGender())
                 .build();
 
         patientRepository.save(patient);
-
         Map<String, Object> extraClaims = Map.of(
                 "role", patient.getRole().name(),
                 "firstName", patient.getFirstName(),
@@ -78,11 +76,10 @@ public class SignUpService {
                 "username", patient.getUsername(),
                 "email", patient.getEmail());
 
-       
 
-        var jwtToken = jwtService.generateToken(extraClaims, patient);
+        return jwtService.generateToken(extraClaims, patient);
 
-        return ResponseDTO.builder()
+        return ResponseMessageDto.builder()
                 .message("Patient registered successfully")
                 .success(true)
                 .statusCode(200)
@@ -96,114 +93,56 @@ public class SignUpService {
         return period.getYears();
     }
 
-    public ResponseDTO doctorSignUp(DoctorDTO signUpRequest) {
-            // Validate required fields
-            if (signUpRequest.getUsername() == null || signUpRequest.getUsername().isEmpty() ||
-                            signUpRequest.getPassword() == null || signUpRequest.getPassword().isEmpty() ||
-                            signUpRequest.getEmail() == null || signUpRequest.getEmail().isEmpty()) {
-                    return ResponseDTO.builder()
-                                    .message("Invalid sign up request")
-                                    .success(false)
-                                    .statusCode(400)
-                                    .build();
-            }
-
-            // Create the License object
-            License license = new License(signUpRequest.getLicenseNumber(), signUpRequest.getSpecialty(),
-                            signUpRequest.getIssuingDate());
-
-            // Build the Doctor entity
-            Doctor doctor = Doctor.builder()
-                            .isVerified(false)
-                            .username(signUpRequest.getUsername())
-                            .license(license)
-                            .firstName(signUpRequest.getFirstName())
-                            .lastName(signUpRequest.getLastName())
-                            .password(passwordEncoder.encode(signUpRequest.getPassword()))
-                            .email(signUpRequest.getEmail())
-                            .role(Role.DOCTOR)
-                            .birthDate(signUpRequest.getDateOfBirth())
-                            .phoneNumber(signUpRequest.getPhoneNumber())
-                            .address(signUpRequest.getAddress())
-                            .age(calculateAge(signUpRequest.getDateOfBirth()))
-                            .createdAt(LocalDate.now())
-                            .build();
-
-            doctorRepository.save(doctor);
-
-            // Prepare extra claims for JWT
-            Map<String, Object> extraClaims = Map.of(
-                            "role", doctor.getRole().name(),
-                            "firstName", doctor.getFirstName(),
-                            "lastName", doctor.getLastName(),
-                            "username", doctor.getUsername(),
-                            "email", doctor.getEmail());
-
-            var jwtToken = jwtService.generateToken(extraClaims, doctor);
-
-            return ResponseDTO.builder()
-                            .message("Doctor registered successfully, Waiting for License verification")
-                            .success(true)
-                            .statusCode(200)
-                            .data(jwtToken)
-                            .build();
-    }
-
-    public ResponseEntity<ResponseDTO> adminSignUp(ClinicAdminDTO signUpRequest) {
-
+    public ResponseMessageDto doctorSignUp(DoctorDTO signUpRequest) {
+        // Validate required fields
         if (signUpRequest.getUsername() == null || signUpRequest.getUsername().isEmpty() ||
-            signUpRequest.getPassword() == null || signUpRequest.getPassword().isEmpty() ||
-            signUpRequest.getEmail() == null || signUpRequest.getEmail().isEmpty()) {
-            return ResponseEntity.badRequest().body(
-                ResponseDTO.builder()
+                signUpRequest.getPassword() == null || signUpRequest.getPassword().isEmpty() ||
+                signUpRequest.getEmail() == null || signUpRequest.getEmail().isEmpty()) {
+            return ResponseMessageDto.builder()
                     .message("Invalid sign up request")
                     .success(false)
                     .statusCode(400)
-                    .build()
-            );
+                    .build();
         }
 
-        ClinicAdmin admin = ClinicAdmin.builder()
-            .username(signUpRequest.getUsername())
-            .firstName(signUpRequest.getFirstName())
-            .lastName(signUpRequest.getLastName())
-            .password(passwordEncoder.encode(signUpRequest.getPassword()))
-            .email(signUpRequest.getEmail())
-            .role(Role.ADMIN)
-            .phoneNumber(signUpRequest.getPhoneNumber())
-            .address(
-                Address.builder()
-                    .city(signUpRequest.getAddress().getCity())
-                    .country(signUpRequest.getAddress().getCountry())
-                    .street(signUpRequest.getAddress().getStreet())
-                    .zipCode(signUpRequest.getAddress().getZipCode())
-                    .build()
-                        )
-            .clinic(Clinic.builder().name(signUpRequest.getClinicName()).build())
-            .age(calculateAge(signUpRequest.getDateOfBirth()))
-            .birthDate(signUpRequest.getDateOfBirth())
-            .createdAt(LocalDate.now())
-            .build();
+        // Create the License object
+        License license = new License(signUpRequest.getLicenseNumber(), signUpRequest.getSpecialty(),
+                signUpRequest.getIssuingDate());
 
-        clinicAdminRepository.save(admin);
+        // Build the Doctor entity
+        var doctor = Doctor.builder()
+                .isVerified(false)
+                .username(signUpRequest.getUsername())
+                .license(license)
+                .firstName(signUpRequest.getFirstName())
+                .lastName(signUpRequest.getLastName())
+                .password(passwordEncoder.encode(signUpRequest.getPassword()))
+                .email(signUpRequest.getEmail())
+                .role(Role.DOCTOR)
+                .birthDate(signUpRequest.getDateOfBirth())
+                .phoneNumber(signUpRequest.getPhoneNumber())
+                .address(signUpRequest.getAddress())
+                .age(calculateAge(signUpRequest.getDateOfBirth()))
+                .createdAt(LocalDate.now())
+                .build();
 
+        doctorRepository.save(doctor);
+
+        // Prepare extra claims for JWT
         Map<String, Object> extraClaims = Map.of(
-            "role", admin.getRole().name(),
-            "firstName", admin.getFirstName(),
-            "lastName", admin.getLastName(),
-            "username", admin.getUsername(),
-            "email", admin.getEmail()
-        );
+                "role", doctor.getRole().name(),
+                "firstName", doctor.getFirstName(),
+                "lastName", doctor.getLastName(),
+                "username", doctor.getUsername(),
+                "email", doctor.getEmail());
 
-        var jwtToken = jwtService.generateToken(extraClaims, admin);
+        var jwtToken = jwtService.generateToken(extraClaims, doctor);
 
-        return ResponseEntity.ok(
-            ResponseDTO.builder()
-                .message("Admin registered successfully, waiting for verification")
+        return ResponseMessageDto.builder()
+                .message("Doctor registered successfully, Waiting for License verification")
                 .success(true)
                 .statusCode(200)
                 .data(jwtToken)
-                .build()
-        );
+                .build();
     }
 }

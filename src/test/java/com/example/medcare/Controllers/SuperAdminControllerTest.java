@@ -26,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class SuperAdminControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
     @Mock

@@ -1,17 +1,16 @@
 package com.example.medcare.Controllers;
 
 import com.example.medcare.controller.RegistrationController;
-import com.example.medcare.dto.AuthenticationRequest;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.PatientDTO;
-import com.example.medcare.dto.ResponseDTO;
+import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.service.AuthenticateService;
 import com.example.medcare.service.SignUpService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -21,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class RegistrationControllerTest {
 
-    @Autowired
+
     private MockMvc mockMvc;
 
     @Mock
@@ -35,7 +34,7 @@ class RegistrationControllerTest {
 
     private PatientDTO patientDTO;
     private DoctorDTO doctorDTO;
-    private ResponseDTO successResponse;
+    private ResponseMessageDto successResponse;
 
     @BeforeEach
     void setUp() {
@@ -50,9 +49,6 @@ class RegistrationControllerTest {
                 .password("password123")
                 .email("john.doe@example.com")
                 .phoneNumber("1234567890")
-                .role(null) // Assuming it's set internally
-                .age(30)
-                .dateOfBirth(null) // Assuming it's set internally
                 .insuranceNumber("INS123456")
                 .emergencyContactNumber("9876543210")
                 .build();
@@ -66,10 +62,9 @@ class RegistrationControllerTest {
                 .phoneNumber("9876543210")
                 .licenseNumber("LIC123456")
                 .Specialty("Cardiology")
-                .issuingDate(null) // Assuming it's set internally
                 .build();
 
-        successResponse = ResponseDTO.builder()
+        successResponse = ResponseMessageDto.builder()
                 .message("Authentication successfull")
                 .success(true)
                 .statusCode(200)
@@ -104,7 +99,7 @@ class RegistrationControllerTest {
     @Test
     void testRegisterPatient_Failed() throws Exception {
         // Mock the response of signUpService for invalid patient registration
-        ResponseDTO errorResponse = ResponseDTO.builder()
+        ResponseMessageDto errorResponse = ResponseMessageDto.builder()
                 .message("Invalid signup request")
                 .success(false)
                 .statusCode(400)
@@ -126,19 +121,19 @@ class RegistrationControllerTest {
         when(signUpService.doctorSignUp(any(DoctorDTO.class))).thenReturn(successResponse);
 
         mockMvc.perform(post("/api/authenticate/register/doctor")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\n" +
-                        "\"username\": \"dr_jane\",\n" +
-                        "\"firstName\": \"Jane\",\n" +
-                        "\"lastName\": \"Smith\",\n" +
-                        "\"password\": \"password123\",\n" +
-                        "\"email\": \"dr.jane@example.com\",\n" +
-                        "\"phoneNumber\": \"9876543210\",\n" +
-                        "\"licenseNumber\": \"LIC123456\",\n" +
-                        "\"specialty\": \"Cardiology\"\n" +
-                        "}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\n" +
+                                "\"username\": \"dr_jane\",\n" +
+                                "\"firstName\": \"Jane\",\n" +
+                                "\"lastName\": \"Smith\",\n" +
+                                "\"password\": \"password123\",\n" +
+                                "\"email\": \"dr.jane@example.com\",\n" +
+                                "\"phoneNumber\": \"9876543210\",\n" +
+                                "\"licenseNumber\": \"LIC123456\",\n" +
+                                "\"specialty\": \"Cardiology\"\n" +
+                                "}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Authentication successfull"))
+                .andExpect(jsonPath("$.message").value("Authentication successful"))
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.statusCode").value(200));
     }
@@ -147,7 +142,7 @@ class RegistrationControllerTest {
     @Test
     void testRegisterDoctor_Failed() throws Exception {
         // Mock the response of signUpService for invalid doctor registration
-        ResponseDTO errorResponse = ResponseDTO.builder()
+        ResponseMessageDto errorResponse = ResponseMessageDto.builder()
                 .message("Invalid signup request")
                 .success(false)
                 .statusCode(400)
@@ -155,8 +150,9 @@ class RegistrationControllerTest {
         when(signUpService.doctorSignUp(any(DoctorDTO.class))).thenReturn(errorResponse);
 
         mockMvc.perform(post("/api/authenticate/register/doctor")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Invalid signup request"))
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.statusCode").value(400));
@@ -185,7 +181,7 @@ class RegistrationControllerTest {
 
         // Mock the authenticationService response for failed login
         when(authenticateService.authenticate(any(AuthenticationRequest.class)))
-                .thenReturn(ResponseDTO.builder()
+                .thenReturn(ResponseMessageDto.builder()
                         .message("Invalid credentials")
                         .success(false)
                         .statusCode(401)

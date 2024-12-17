@@ -5,14 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.medcare.dto.ClinicAdminDTO;
 import com.example.medcare.dto.ClinicDTO;
 import com.example.medcare.dto.DoctorDTO;
-import com.example.medcare.dto.ResponseDTO;
-import com.example.medcare.entities.Clinic;
+import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.entities.Doctor;
 import com.example.medcare.repository.ClinicRepository;
 import com.example.medcare.repository.DoctorRepository;

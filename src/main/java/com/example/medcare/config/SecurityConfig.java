@@ -29,9 +29,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/authenticate/**") // list of request that should be permitted
-                                        .permitAll()
-                        .requestMatchers("/api/clinic/**") 
-                        .permitAll()            
+                        .permitAll()
                         
                         .requestMatchers("/api/v1/SuperAdmin/**") // list of request that should be permitted
                                         .hasRole("SUPER_ADMIN")
