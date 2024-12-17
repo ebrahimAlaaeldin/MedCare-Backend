@@ -147,12 +147,6 @@ public class ForgetResetPasswordService {
                 forgotPasswordRepository.delete(fp);
                 throw new RuntimeException("OTP has expired");
             }
-            Map<String, Object> claims = Map.of("role", user.getRole().toString(),
-                    "firstName", user.getFirstName(),
-                    "lastName", user.getLastName(),
-                    "email", user.getEmail(),
-                    "username", user.getUsername()
-            );
             String jwtToken=jwtService.generateToken(otp,user);
             forgotPasswordRepository.delete(fp);
             return ResponseEntity.ok().body(ResponseMessageDto.builder()

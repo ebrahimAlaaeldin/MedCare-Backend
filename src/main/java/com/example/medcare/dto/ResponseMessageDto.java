@@ -14,4 +14,7 @@ public class ResponseMessageDto {
     private Integer statusCode;
     private Object data;
 
+    public boolean isSuccess() {
+        return success;
+    }
 }

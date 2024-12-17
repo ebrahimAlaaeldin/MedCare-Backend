@@ -8,4 +8,6 @@ import lombok.Data;
 public class ResetPasswordDto {
     private String oldPassword;
     private String newPassword;
+
+
 }
