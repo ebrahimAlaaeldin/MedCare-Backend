@@ -1,5 +1,6 @@
 package com.example.medcare.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
+
 public class AppointmentDTO {
     private Integer patientId;
     private Integer doctorId;

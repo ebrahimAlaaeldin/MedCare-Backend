@@ -1,6 +1,7 @@
 package com.example.medcare.service;
 
 import com.example.medcare.dto.AppointmentDTO;
+import com.example.medcare.dto.CancelDTO;
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.entities.Appointment;
 import com.example.medcare.repository.AppointmentRepository;
@@ -8,7 +9,6 @@ import com.example.medcare.repository.PatientRepository;
 import com.example.medcare.repository.DoctorRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +46,7 @@ public class ScheduleAppointmentService {
         //check if patient exists
         var patient = patientRepository.findById(appointmentDTO.getPatientId());
 
-        if(patient.isEmpty()){
+        if (patient.isEmpty()) {
 
             return ResponseEntity.status(404).body(ResponseMessageDto.builder()
             .message("Patient Not Found")
@@ -54,12 +54,13 @@ public class ScheduleAppointmentService {
             .statusCode(404)
             .build());
         }
-        
+
 
         //check if doctor exists
         var doctor = doctorRepository.findById(appointmentDTO.getDoctorId());
 
-        if(doctor.isEmpty()){
+        if (doctor.isEmpty()) {
+
 
             return ResponseEntity.status(404).body(ResponseMessageDto.builder()
             .message("Doctor Not Found")
@@ -70,8 +71,9 @@ public class ScheduleAppointmentService {
         
         //check if appointment time is available
         boolean existsAnAppointment = appointmentRepository.existsByDoctorIdAndAppointmentTime(appointmentDTO.getDoctorId(), appointmentDTO.getAppointmentTime());
-        
-        if(existsAnAppointment){
+
+        if (existsAnAppointment) {
+
 
             return ResponseEntity.status(409).body(ResponseMessageDto.builder()
             .message("This time slot is reserved.")
@@ -90,10 +92,12 @@ public class ScheduleAppointmentService {
         //save to database
         appointmentRepository.save(appointment);
 
+
         return ResponseEntity.ok().body(ResponseMessageDto.builder()
         .message("Appointment Scheduled Successfully")
         .success(true)
         .statusCode(200)
         .build());
+
     }
 }
