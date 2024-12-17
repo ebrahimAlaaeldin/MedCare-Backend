@@ -30,10 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/authenticate/**") // list of request that should be permitted
                         .permitAll()
-
-                        .requestMatchers("/api/appointment/**") // list of request that should be permitted
-                        .hasRole("PATIENT")
-
+                        
                         .requestMatchers("/api/v1/SuperAdmin/**") // list of request that should be permitted
                                         .hasRole("SUPER_ADMIN")
                         

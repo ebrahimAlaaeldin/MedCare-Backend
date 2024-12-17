@@ -1,5 +1,5 @@
 package com.example.medcare.controller;
-import com.example.medcare.dto.ResponseMessageDto;
+import com.example.medcare.dto.ResponseDTO;
 import com.example.medcare.dto.TokenThirdPartyDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
 public class ThirdPartyController {
     private final ThirdPartyService thirdPartyService;
     @PostMapping("/login")
-    public ResponseEntity<Object> thirdPartyLogin(@RequestBody TokenThirdPartyDto token) throws Exception {
+    public ResponseMessageDto thirdPartyLogin(@RequestBody TokenThirdPartyDto token) throws Exception {
         System.out.println("dfs");
         return thirdPartyService.thirdPartyLogin(token);
     }

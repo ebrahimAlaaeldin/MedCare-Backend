@@ -5,6 +5,7 @@ import com.example.medcare.dto.AppointmentDTO;
 import com.example.medcare.dto.CancelDTO;
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.service.CancelAppointmentService;
+import com.example.medcare.service.RescheduleAppointementService;
 import com.example.medcare.service.ScheduleAppointmentService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class AppointmentController {
 
     private final ScheduleAppointmentService scheduleAppointmentService;
     private final CancelAppointmentService cancelappointmentService;
-
+    private final RescheduleAppointementService rescheduleAppointementService;
 
     @PostMapping("/schedule")
     public ResponseEntity<Object> scheduleAppointment(
@@ -33,5 +34,11 @@ public class AppointmentController {
             @RequestBody CancelDTO requestForCancelations) {
         // Cancel an appointment
         return cancelappointmentService.cancelAppointment(requestForCancelations);
+    }
+    @PostMapping("/reschedule")
+    public ResponseEntity<Object> rescheduleAppointment(
+            @RequestBody AppointmentDTO requestForAppointment) {
+        // Reschedule an appointment
+        return rescheduleAppointementService.rescheduleAppointment(requestForAppointment);
     }
 }

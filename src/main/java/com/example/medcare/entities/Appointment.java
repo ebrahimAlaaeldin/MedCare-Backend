@@ -30,6 +30,9 @@ public class Appointment {
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
+    @Column
+    private boolean reminded;
+
     @Column(nullable = false)
     //date format is "yyyy-MM-DD HH:mm"
     private String appointmentTime;

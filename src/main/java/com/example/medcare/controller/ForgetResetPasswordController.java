@@ -1,7 +1,6 @@
 package com.example.medcare.controller;
 
 import com.example.medcare.dto.*;
-import com.example.medcare.repository.UserRepository;
 import com.example.medcare.service.ForgetResetPasswordService;
 import lombok.AllArgsConstructor;
 
@@ -18,10 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 public class ForgetResetPasswordController {
     private final ForgetResetPasswordService forgetResetPasswordService;
-    private final UserRepository userRepository;
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<Object> resetPassword(
+    public ResponseMessageDto resetPassword(
             @RequestBody ResetPasswordDto input,
             @RequestHeader(value = "Authorization", required = true) String authorizationHeader) {
         String token = extractTokenFromHeader(authorizationHeader);
@@ -31,24 +29,19 @@ public class ForgetResetPasswordController {
 
 
     @PostMapping("/api/authenticate/forgetPassword")
-    public ResponseEntity<Object> forgetPassword(@RequestBody ForgetPassEmail email)
-    {
+    public ResponseMessageDto forgetPassword(@RequestBody ForgetPassEmail email) {
         return forgetResetPasswordService.sendOTPtoEmail(email);
     }
 
 
     //receive Token on Validation
     @PostMapping("/api/authenticate/forgetPassword/validatePin")
-    public ResponseEntity<Object> validatePin(@RequestBody ValidateOTPDto otpValidationRequest)
-    {
+    public ResponseMessageDto validatePin(@RequestBody ValidateOTPDto otpValidationRequest) {
         return forgetResetPasswordService.validateOTP(otpValidationRequest);
     }
-    @PostMapping("/otpValidation/changePassword")
-    public ResponseEntity<Object> changePassword(@RequestBody ChangePasswordDto changePass,
-                                                 @RequestHeader(value="Authorization", required = true) String authorizationHeader)
-    {
-
-        return forgetResetPasswordService.changePassword(changePass,extractTokenFromHeader(authorizationHeader));
+    @PostMapping("/api/authenticate/changePassword")
+    public ResponseMessageDto changePassword(@RequestBody ChangePasswordDto changePass) {
+        return forgetResetPasswordService.changePassword(changePass);
     }
 
 
