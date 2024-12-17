@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.aspectj.weaver.ast.Not;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,6 @@ import com.example.medcare.dto.ClinicDTO;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.ResponseDTO;
 import com.example.medcare.entities.Clinic;
-import com.example.medcare.entities.ClinicAdmin;
 import com.example.medcare.entities.Doctor;
 import com.example.medcare.repository.ClinicRepository;
 import com.example.medcare.repository.DoctorRepository;
@@ -62,7 +60,7 @@ public class SuperAdminService {
         Optional<Doctor> doctor = doctorRepository.findByUsername(username);
 
         if (doctor.isPresent()) {
-            doctor.get().setIsVerified(true);
+            doctor.get().setVerified(true);
             doctorRepository.save(doctor.get());
 
             return ResponseDTO.builder()
@@ -114,7 +112,7 @@ public class SuperAdminService {
             Optional<Clinic> clinic = clinicRepository.findById(clinicId);
 
             if (clinic.isPresent()) {
-                clinic.get().setIsVerified(true);
+                clinic.get().setVerified(true);
                 clinicRepository.save(clinic.get());
 
                 return ResponseDTO.builder()

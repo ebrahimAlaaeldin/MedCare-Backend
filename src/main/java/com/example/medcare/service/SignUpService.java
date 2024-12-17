@@ -13,14 +13,12 @@ import com.example.medcare.entities.ClinicAdmin;
 import com.example.medcare.entities.Doctor;
 import com.example.medcare.entities.Patient;
 import com.example.medcare.repository.ClinicAdminRepository;
-import com.example.medcare.repository.ClinicRepository;
 import com.example.medcare.repository.DoctorRepository;
 import com.example.medcare.repository.PatientRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.var;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -55,7 +53,7 @@ public class SignUpService {
             
 
 
-        var patient = Patient.builder()
+        Patient patient = Patient.builder()
                 .username(signUpRequest.getUsername())
                 .insuranceId(signUpRequest.getInsuranceNumber())
                 .emergencyContactPhone(signUpRequest.getEmergencyContactNumber())
@@ -70,6 +68,7 @@ public class SignUpService {
                 .birthDate(signUpRequest.getDateOfBirth())
                 .createdAt(LocalDate.now())
                 .build();
+
         patientRepository.save(patient);
 
         Map<String, Object> extraClaims = Map.of(

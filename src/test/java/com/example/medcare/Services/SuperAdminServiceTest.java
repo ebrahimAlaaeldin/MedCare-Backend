@@ -4,31 +4,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
+
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import javax.print.Doc;
 
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.embedded.Address;
 import com.example.medcare.embedded.License;
-import com.example.medcare.entities.Clinic;
 import com.example.medcare.entities.Doctor;
 import com.example.medcare.repository.DoctorRepository;
 import com.example.medcare.service.SuperAdminService;
@@ -75,7 +69,7 @@ public class SuperAdminServiceTest {
     @Test
     void testReturnPendingApplications_WithPendingDoctors() {
 
-        when(doctorRepository.findAllByIsVerified(false)).thenReturn(Optional.of(doctor));
+        when(doctorRepository.findAllByIsVerified(false)).thenReturn(List.of(doctor));
 
         List<DoctorDTO> result = superAdminService.returnPendingApplications();
 
@@ -89,7 +83,7 @@ public class SuperAdminServiceTest {
     @Test
     void testReturnPendingApplications_NoPendingDoctors() {
         // Mock the repository call to return an empty list
-        when(doctorRepository.findAllByIsVerified(false)).thenReturn(Optional.empty());
+        when(doctorRepository.findAllByIsVerified(false)).thenReturn(List.of());
 
         List<DoctorDTO> result = superAdminService.returnPendingApplications();
 
@@ -108,7 +102,7 @@ public class SuperAdminServiceTest {
         superAdminService.approveDoctorApplication("john_doe");
 
         // Verify that the doctor's `isVerified` flag was set to true
-        assertTrue(doctor.getIsVerified());
+        assertTrue(doctor.isVerified());
 
         // Verify that save was called on the repository
         verify(doctorRepository, times(1)).save(doctor);

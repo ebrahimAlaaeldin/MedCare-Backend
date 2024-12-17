@@ -1,7 +1,6 @@
 package com.example.medcare.controller;
 
 import com.example.medcare.dto.*;
-import com.example.medcare.repository.UserRepository;
 import com.example.medcare.service.ForgetResetPasswordService;
 import lombok.AllArgsConstructor;
 
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 public class ForgetResetPasswordController {
     private final ForgetResetPasswordService forgetResetPasswordService;
-    private final UserRepository userRepository;
 
     @PostMapping("/resetPassword")
     public ResponseDTO resetPassword(

@@ -29,9 +29,9 @@ public class Clinic {
     private Address address;
 
     
-    private Boolean isVerified;
+    private boolean isVerified;
 
-    private Boolean isActive;
+    private boolean isActive;
 
     private LocalDate createdAt;
 

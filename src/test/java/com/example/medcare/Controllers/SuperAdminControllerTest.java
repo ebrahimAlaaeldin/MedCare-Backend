@@ -4,9 +4,7 @@ import com.example.medcare.controller.SuperAdminController;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.ResponseDTO;
 import com.example.medcare.service.SuperAdminService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.apache.catalina.connector.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
