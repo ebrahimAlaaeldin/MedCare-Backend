@@ -60,7 +60,6 @@ public class ClinicRegistrationService {
     }
 
 
-    // TODO: make Clinic and Clinic Admin registration
     @Transactional
     public ResponseEntity<ResponseDTO> registerClinicandAdminRegistration(ClinicDTO request) {
 
