@@ -34,7 +34,6 @@ public class Appointment {
     //date format is "yyyy-MM-DD HH:mm"
     private String appointmentTime;
 
-
     private boolean isConfirmed;
 
     private boolean isCancelled;
