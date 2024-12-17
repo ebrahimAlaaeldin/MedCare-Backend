@@ -1,6 +1,5 @@
 package com.example.medcare.service;
 
-import com.example.medcare.dto.ResetPasswordDto;
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.dto.TokenThirdPartyDto;
 import org.springframework.http.HttpStatus;
@@ -19,23 +18,29 @@ public class ThirdPartyService {
     private UserRepository userRepository;
     private final JwtService jwtService;
 
-    public ResponseMessageDto thirdPartyLogin(TokenThirdPartyDto token) throws Exception {
+    public ResponseEntity<Object> thirdPartyLogin(TokenThirdPartyDto token) throws Exception {
         try {
 
             // Extract the email from the token Google sends
             String email = jwtService.extractEmail(token.getToken());
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found"));
-            return ResponseMessageDto.builder()
-                    .message("User found")
+            Map<String, Object> claims = Map.of("role", user.getRole().toString(),
+                    "firstName", user.getFirstName(),
+                    "lastName", user.getLastName(),
+                    "email", user.getEmail(),
+                    "username", user.getUsername()
+            );
+            String jwt = jwtService.generateToken(claims, user);
+            return ResponseEntity.ok().body(ResponseMessageDto.builder()
                     .success(true)
                     .message("User logged in successfully")
                     .statusCode(200)
                     .data(jwt)
                     .build());
         } catch (Exception e) {
-            return ResponseMessageDto.builder()
-                    .message(e.getMessage())
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseMessageDto.builder()
                     .success(false)
                     .message("Failed to log in")
                     .statusCode(400)

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.medcare.dto.ClinicDTO;
-import com.example.medcare.dto.ResponseDTO;
+import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.service.ClinicRegistrationService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,13 +20,13 @@ public class ClinicRegistrationController {
     private final ClinicRegistrationService clinicRegistrationService;
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseDTO> registerClinic(@RequestBody ClinicDTO request) {
+    public ResponseEntity<ResponseMessageDto> registerClinic(@RequestBody ClinicDTO request) {
         return clinicRegistrationService.registerClinic(request);
     }
 
 
     @PostMapping("/register/clinic-admin")
-    public ResponseEntity<ResponseDTO> registerClinicAndAdmin(@RequestBody ClinicDTO request) {
+    public ResponseEntity<ResponseMessageDto> registerClinicAndAdmin(@RequestBody ClinicDTO request) {
         return clinicRegistrationService.registerClinicandAdminRegistration(request);
     }
 

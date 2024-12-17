@@ -2,7 +2,7 @@ package com.example.medcare.Controllers;
 
 import com.example.medcare.controller.SuperAdminController;
 import com.example.medcare.dto.DoctorDTO;
-import com.example.medcare.dto.ResponseDTO;
+import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.service.SuperAdminService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -36,8 +36,8 @@ class SuperAdminControllerTest {
 
     private DoctorDTO doctorDTO;
 
-    private ResponseDTO successResponse;
-    private ResponseDTO notFoundResponse;
+    private ResponseMessageDto successResponse;
+    private ResponseMessageDto notFoundResponse;
 
     @BeforeEach
     void setUp() {
@@ -52,14 +52,14 @@ class SuperAdminControllerTest {
         doctorDTO.setEmail("john.doe@example.com");
         doctorDTO.setPhoneNumber("1234567890");
 
-         successResponse = ResponseDTO
+         successResponse = ResponseMessageDto
                 .builder()
                  .message("Doctor application approved")
                     .success(true)
                         .statusCode(200)
                 .build();
 
-         notFoundResponse = ResponseDTO
+         notFoundResponse = ResponseMessageDto
                 .builder()
                  .message("Doctor not found")
                  .success(false)

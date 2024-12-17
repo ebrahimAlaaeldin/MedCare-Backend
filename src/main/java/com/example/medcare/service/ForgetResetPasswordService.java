@@ -28,7 +28,8 @@ public class ForgetResetPasswordService {
     private final EmailService emailService;
 
 
-    public ResponseMessageDto resetPassword(ResetPasswordDto input, String token) {
+
+    public ResponseEntity<Object> resetPassword(ResetPasswordDto input, String token) {
         // Reset the password
         var username = jwtService.extractUsername(token);
         try {
@@ -37,19 +38,27 @@ public class ForgetResetPasswordService {
             var user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Update the user's password
-            user.setPassword(passwordEncoder.encode(input.getNewPassword()));
-            userRepository.save(user);
-            return ResponseMessageDto.builder()
-                    .message("Password reset successfully")
-                    .statusCode(200)
-                    .success(true)
-                    .data(null)
-                    .build();
+            if(!passwordEncoder.matches(input.getOldPassword(),user.getPassword())){
+                throw new RuntimeException("Invalid old password");
+            }
+            else {
+
+                // Update the user's password
+                user.setPassword(passwordEncoder.encode(input.getNewPassword()));
+                userRepository.save(user);
+
+                return ResponseEntity.ok().body(ResponseMessageDto.builder()
+                        .message("Password reset successfully")
+                        .success(true)
+                        .statusCode(200)
+                        .data(null)
+                        .build());
+            }
 
         } catch (Exception e) {
-            return ResponseMessageDto.builder()
-                    .message("Failed to reset password")
+            return ResponseEntity.badRequest().body(ResponseMessageDto.builder()
+                    .message(e.getMessage())
+                    .success(false)
                     .statusCode(400)
                     .data(null)
                     .build());
@@ -58,7 +67,7 @@ public class ForgetResetPasswordService {
 
     }
 
-    public ResponseMessageDto sendOTPtoEmail(ForgetPassEmail email) {
+    public ResponseEntity<Object> sendOTPtoEmail(ForgetPassEmail email) {
         try {
 
             var user = userRepository.findByEmail(email.getEmail())
@@ -97,15 +106,17 @@ public class ForgetResetPasswordService {
             emailService.sendHtmlMessage(mailBody);
             forgotPasswordRepository.save(fp);
 
-            return ResponseMessageDto.builder()
-                    .message("Password OTP sent to your email")
+            return ResponseEntity.ok().body(ResponseMessageDto.builder()
+                    .message("OTP sent successfully to "+ user.getEmail())
+                    .success(true)
                     .statusCode(200)
                     .data(null)
                     .build());
 
         } catch (Exception e) {
-            return ResponseMessageDto.builder()
-                    .message("Email not found")
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseMessageDto.builder()
+                    .message(e.getMessage())
+                    .success(false)
                     .statusCode(400)
                     .data(null)
                     .build());
@@ -114,10 +125,17 @@ public class ForgetResetPasswordService {
 
     private int otpGenerator() {
         Random random = new Random();
-        return random.nextInt(100_000, 999_999);
+        int randomOtp= random.nextInt(100_000, 999_999);
+        //check if the otp is in the database
+        if(forgotPasswordRepository.existsByOtp(randomOtp)){
+            return otpGenerator();
+        }
+        else{
+            return randomOtp;
+        }
     }
 
-    public ResponseMessageDto validateOTP(ValidateOTPDto otpValidationRequest) {
+    public ResponseEntity<Object> validateOTP(ValidateOTPDto otpValidationRequest) {
         try {
             User user = userRepository.findByEmail(otpValidationRequest.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
@@ -127,44 +145,30 @@ public class ForgetResetPasswordService {
 
             if (fp.getExpirationTime().before(Date.from(Instant.now()))) {
                 forgotPasswordRepository.delete(fp);
-                return ResponseMessageDto.builder()
-                        .message("OTP has expired")
-                        .statusCode(400)
-                        .success(false)
-                        .data(null)
-                        .build();
+                throw new RuntimeException("OTP has expired");
             }
-
-
+            String jwtToken=jwtService.generateToken(otp,user);
             forgotPasswordRepository.delete(fp);
-            return ResponseMessageDto.builder()
-                    .message("Pin is valid")
+
+            return ResponseEntity.ok().body(ResponseMessageDto.builder()
+                    .message("OTP validated successfully")
+                    .success(true)
                     .statusCode(200)
                     .data(jwtToken)
                     .build());
         } catch (Exception e) {
-            if (e.getMessage().equals("OTP not found")) {
-                return ResponseMessageDto.builder()
-                        .message("Invalid OTP")
-                        .statusCode(400)
-                        .success(false)
-                        .data(null)
-                        .build();
-            }
-            else {
-                return ResponseMessageDto.builder()
-                        .message("Failed to validate OTP")
-                        .statusCode(400)
-                        .success(false)
-                        .data(null)
-                        .build();
-            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseMessageDto.builder()
+                    .message(e.getMessage())
+                    .success(false)
+                    .statusCode(400)
+                    .data(null)
+                    .build());
         }
 
     }
 
 
-    public ResponseMessageDto changePassword(ChangePasswordDto newUser){
+    public ResponseEntity<Object> changePassword(ChangePasswordDto newUser, String otpToken){
         try {
             // Find the user by username
             var user = userRepository.findByEmail(newUser.getEmail())
@@ -181,15 +185,26 @@ public class ForgetResetPasswordService {
             // Update the user's password
             user.setPassword(passwordEncoder.encode(newUser.getNewPassword()));
             userRepository.save(user);
-            return ResponseMessageDto.builder()
+            Map<String, Object> claims = Map.of("role", user.getRole().toString(),
+                    "firstName", user.getFirstName(),
+                    "lastName", user.getLastName(),
+                    "email", user.getEmail(),
+                    "username", user.getUsername()
+            );
+
+            String jwtToken = jwtService.generateToken(claims,user);
+
+            return ResponseEntity.ok().body(ResponseMessageDto.builder()
                     .message("Password changed successfully")
                     .success(true)
                     .statusCode(200)
                     .data(jwtToken)
                     .build());
         } catch (Exception e) {
-            return ResponseMessageDto.builder()
-                    .message("Failed to change password")
+
+            return ResponseEntity.badRequest().body(ResponseMessageDto.builder()
+                    .message(e.getMessage())
+                    .success(false)
                     .statusCode(400)
                     .data(null)
                     .build());

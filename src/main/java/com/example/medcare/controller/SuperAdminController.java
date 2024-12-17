@@ -29,7 +29,6 @@ public class SuperAdminController {
 
     private final SuperAdminService superAdminService;
 
-    // Super Admin review the application of the doctor
 
 
     @GetMapping("/doctorApplications/pending")
@@ -42,6 +41,7 @@ public class SuperAdminController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         else
             return new ResponseEntity<>(pendingApplications, HttpStatus.OK);
+
         
     }
 

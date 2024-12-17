@@ -19,7 +19,7 @@ public class ForgetResetPasswordController {
     private final ForgetResetPasswordService forgetResetPasswordService;
 
     @PostMapping("/resetPassword")
-    public ResponseMessageDto resetPassword(
+    public ResponseEntity<Object> resetPassword(
             @RequestBody ResetPasswordDto input,
             @RequestHeader(value = "Authorization", required = true) String authorizationHeader) {
         String token = extractTokenFromHeader(authorizationHeader);
@@ -29,19 +29,24 @@ public class ForgetResetPasswordController {
 
 
     @PostMapping("/api/authenticate/forgetPassword")
-    public ResponseMessageDto forgetPassword(@RequestBody ForgetPassEmail email) {
+    public ResponseEntity<Object> forgetPassword(@RequestBody ForgetPassEmail email)
+    {
         return forgetResetPasswordService.sendOTPtoEmail(email);
     }
 
 
     //receive Token on Validation
     @PostMapping("/api/authenticate/forgetPassword/validatePin")
-    public ResponseMessageDto validatePin(@RequestBody ValidateOTPDto otpValidationRequest) {
+    public ResponseEntity<Object> validatePin(@RequestBody ValidateOTPDto otpValidationRequest)
+    {
         return forgetResetPasswordService.validateOTP(otpValidationRequest);
     }
-    @PostMapping("/api/authenticate/changePassword")
-    public ResponseMessageDto changePassword(@RequestBody ChangePasswordDto changePass) {
-        return forgetResetPasswordService.changePassword(changePass);
+    @PostMapping("/otpValidation/changePassword")
+    public ResponseEntity<Object> changePassword(@RequestBody ChangePasswordDto changePass,
+                                                 @RequestHeader(value="Authorization", required = true) String authorizationHeader)
+    {
+
+        return forgetResetPasswordService.changePassword(changePass,extractTokenFromHeader(authorizationHeader));
     }
 
 

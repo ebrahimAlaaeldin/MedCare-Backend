@@ -1,4 +1,4 @@
-package com.example.medcare.Service;
+package com.example.medcare.Services;
 
 import com.example.medcare.dto.AppointmentDTO;
 import com.example.medcare.dto.ResponseMessageDto;
