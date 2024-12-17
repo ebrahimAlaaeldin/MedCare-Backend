@@ -15,20 +15,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/appointment")
 @RequiredArgsConstructor //lombok annotation to create a constructor with all the required fields
 @Getter
-
 @CrossOrigin
 public class AppointmentController {
 
     private final ScheduleAppointmentService scheduleAppointmentService;
     private final CancelAppointmentService cancelappointmentService;
 
+
     @PostMapping("/schedule")
-    public ResponseEntity<ResponseMessageDto> scheduleAppointment(
+    public ResponseEntity<Object> scheduleAppointment(
             @RequestBody AppointmentDTO requestForAppointment) {
 
-        // Schedule an appointment
-        return ResponseEntity.ok(scheduleAppointmentService.scheduleAppointment(requestForAppointment));
-    }
+        return scheduleAppointmentService.scheduleAppointment(requestForAppointment);       }
+  
     @PostMapping("/cancel")
     public ResponseEntity<Object> cancelAppointment(
             @RequestBody CancelDTO requestForCancelations) {
