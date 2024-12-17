@@ -4,13 +4,11 @@ package com.example.medcare.controller;
 import com.example.medcare.dto.AppointmentDTO;
 import com.example.medcare.dto.CancelDTO;
 import com.example.medcare.dto.ResponseMessageDto;
-import com.example.medcare.entities.Appointment;
 import com.example.medcare.service.CancelAppointmentService;
 import com.example.medcare.service.ScheduleAppointmentService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Getter
 
 @CrossOrigin
-public class ScheduleController {
+public class AppointmentController {
 
     private final ScheduleAppointmentService scheduleAppointmentService;
     private final CancelAppointmentService cancelappointmentService;
@@ -32,9 +30,9 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleAppointmentService.scheduleAppointment(requestForAppointment));
     }
     @PostMapping("/cancel")
-    public ResponseEntity<ResponseEntity<Object>> cancelAppointment(
+    public ResponseEntity<Object> cancelAppointment(
             @RequestBody CancelDTO requestForCancelations) {
         // Cancel an appointment
-        return ResponseEntity.ok(cancelappointmentService.cancelAppointment(requestForCancelations));
+        return cancelappointmentService.cancelAppointment(requestForCancelations);
     }
 }
