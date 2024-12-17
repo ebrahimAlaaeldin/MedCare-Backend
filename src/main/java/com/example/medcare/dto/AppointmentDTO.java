@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 
 public class AppointmentDTO {
+    private Integer appointmentId;
     private Integer patientId;
     private Integer doctorId;
     private String appointmentTime;
