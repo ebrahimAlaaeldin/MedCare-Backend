@@ -4,9 +4,8 @@ package com.example.medcare.service;
 import com.example.medcare.Authorization.AuthenticationResponse;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.AuthenticationRequest;
-
 import com.example.medcare.dto.ResponseMessageDto;
-import com.example.medcare.entities.User;
+
 import com.example.medcare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,49 +49,41 @@ public class AuthenticateService {
                     new UsernamePasswordAuthenticationToken(username,request.getPassword())
 
             );
-            Map<String, Object> claims = Map.of("role", user.getRole().toString(),
-                    "firstName", user.getFirstName(),
-                    "lastName", user.getLastName(),
-                    "email", user.getEmail(),
-                    "username", user.getUsername()
-            )
-                    ;
-            var token = jwtService.generateToken(claims, user);
-
-            return ResponseEntity.ok().body(ResponseMessageDto.builder().message("User authenticated successfully").success(true).statusCode(200).data(token).build());
-
         }
         catch (Exception e) {
+            Object response = ResponseMessageDto.builder()
+                    .message("Invalid credentials")
+                    .success(false)
+                    .statusCode(401)
+                    .build();
 
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(ResponseMessageDto.builder()
-                            .message(e.getMessage())
-                            .success(false)
-                            .statusCode(400)
-                            .data(null)
-                            .build());
+            //log.error("Invalid credentials", e);
+            return response;
         }
+        var user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Map<String, Object> claims = Map.of("role", user.getRole().toString(),
+            "firstName", user.getFirstName(),
+                "lastName", user.getLastName(),
+                "email", user.getEmail(),
+                "username", user.getUsername()
+        )
+                ;
+        var token = jwtService.generateToken(claims, user);
+
+        return ResponseMessageDto.builder()
+                .message("Authentication successful")
+                .success(true)
+                .statusCode(200)
+                .data(token)
+                .build();
+
 
     }
 
 
-    public ResponseEntity<Object> refreshToken(String token) {
-        try {
-            String username = jwtService.extractUsername(token);
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
-            Map<String, Object> claims = Map.of("role", user.getRole().toString(),
-                    "firstName", user.getFirstName(),
-                    "lastName", user.getLastName(),
-                    "email", user.getEmail(),
-                    "username", user.getUsername()
-            )
-                    ;
-            var newToken = jwtService.generateToken(claims, user);
-            return ResponseEntity.ok().body(ResponseMessageDto.builder().message("Token refreshed successfully").success(true).statusCode(200).data(newToken).build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseMessageDto.builder().message(e.getMessage()).success(false).statusCode(400).data(null).build());
-        }
-    }
+
+
+
 }

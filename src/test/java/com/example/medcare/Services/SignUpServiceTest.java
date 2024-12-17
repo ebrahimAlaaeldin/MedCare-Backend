@@ -3,8 +3,16 @@ package com.example.medcare.Services;
 import com.example.medcare.controller.RegistrationController;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.PatientDTO;
-import com.example.medcare.service.AuthenticateService;
+import com.example.medcare.dto.ResponseMessageDto;
+import com.example.medcare.embedded.Address;
+import com.example.medcare.entities.Doctor;
+import com.example.medcare.entities.Patient;
+import com.example.medcare.Enums.Role;
+import com.example.medcare.repository.DoctorRepository;
+import com.example.medcare.repository.PatientRepository;
 import com.example.medcare.service.SignUpService;
+
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -68,47 +76,62 @@ public class SignUpServiceTest {
 
     // Test successful doctor registration
     @Test
-    void testRegisterDoctor_Success() throws Exception {
-        // Mock the response of signUpService
-        when(signUpService.doctorSignUp(any(DoctorDTO.class))).thenAnswer(invocation -> {
-            DoctorDTO dto = invocation.getArgument(0);
-            Map<String, String> mockJwtToken = Map.of("token", "JWT-TOKEN-HERE");
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.set("message", "Doctor registered successfully");
-            return ResponseEntity.ok().headers(responseHeaders).body(mockJwtToken);
-        });
+    void testPatientSignUp_Success() {
+        // Mock necessary repository methods
+        Mockito.when(patientRepository.save(any(Patient.class))).thenReturn(new Patient());
+        Mockito.when(jwtService.generateToken(any(), any(Patient.class))).thenReturn("jwt-token");
 
-        mockMvc.perform(post("/api/authenticate/register/doctor")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\n" +
-                                "\"username\": \"dr_jane\",\n" +
-                                "\"firstName\": \"Jane\",\n" +
-                                "\"lastName\": \"Smith\",\n" +
-                                "\"password\": \"password123\",\n" +
-                                "\"email\": \"dr.jane@example.com\",\n" +
-                                "\"phoneNumber\": \"9876543210\",\n" +
-                                "\"licenseNumber\": \"LIC123456\",\n" +
-                                "\"specialty\": \"Cardiology\"\n" +
-                                "}"))
-                .andExpect(status().isOk())
-                .andExpect(header().string("message", "Doctor registered successfully"))
-                .andExpect(jsonPath("$.token").value("JWT-TOKEN-HERE"));
+        ResponseMessageDto response = signUpService.patientSignUp(patientDTO);
+
+        // Verify the response
+        assertNotNull(response);
+        assertTrue(response.isSuccess());
+        assertEquals(200, response.getStatusCode());
+        assertEquals("Patient registered successfully", response.getMessage());
     }
 
     // Test failed doctor registration (missing fields)
     @Test
-    void testRegisterDoctor_Failed() throws Exception {
-        // Mock the response of signUpService for invalid doctor registration
-        when(signUpService.doctorSignUp(any(DoctorDTO.class))).thenAnswer(invocation -> {
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.set("message", "Invalid sign up request");
-            return ResponseEntity.badRequest().headers(responseHeaders).build();
-        });
+    void testPatientSignUp_InvalidRequest() {
+        // Mock invalid patientDTO with missing fields
+        patientDTO.setUsername(null);               
 
-        mockMvc.perform(post("/api/authenticate/register/doctor")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(header().string("message", "Invalid sign up request"));
+        ResponseMessageDto response = signUpService.patientSignUp(patientDTO);
+
+        // Verify the response for invalid signup
+        assertNotNull(response);
+        assertFalse(response.isSuccess());
+        assertEquals(400, response.getStatusCode());
+        assertEquals("Invalid sign up request", response.getMessage());
+    }
+
+    @Test
+    void testDoctorSignUp_Success() {
+        // Mock necessary repository methods
+        Mockito.when(doctorRepository.save(any(Doctor.class))).thenReturn(new Doctor());
+        Mockito.when(jwtService.generateToken(any(), any(Doctor.class))).thenReturn("jwt-token");
+
+        ResponseMessageDto response = signUpService.doctorSignUp(doctorDTO);
+
+        // Verify the response
+        assertNotNull(response);
+        assertTrue(response.isSuccess());
+        assertEquals(200, response.getStatusCode());
+        assertEquals("Doctor registered successfully, Waiting for License verification", response.getMessage());
+    }
+
+    @Test
+    void testDoctorSignUp_InvalidRequest() {
+        // Mock invalid doctorDTO with missing fields
+        doctorDTO.setUsername(null);
+
+        // Call the doctor sign-up method with invalid DTO
+        ResponseMessageDto response = signUpService.doctorSignUp(doctorDTO);
+
+        // Verify the response for invalid signup
+        assertNotNull(response);
+        assertFalse(response.isSuccess());
+        assertEquals(400, response.getStatusCode());
+        assertEquals("Invalid sign up request", response.getMessage());
     }
 }
