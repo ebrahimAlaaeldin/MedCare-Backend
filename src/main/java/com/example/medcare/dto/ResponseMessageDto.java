@@ -5,12 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+@AllArgsConstructor
 @Data
 @Builder
-@AllArgsConstructor
 public class ResponseMessageDto {
     private String message;
-    private boolean success;
-    private int statusCode;
+    private Boolean success;
+    private Integer statusCode;
     private Object data;
+
 }

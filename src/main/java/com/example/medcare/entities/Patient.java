@@ -15,14 +15,9 @@ import lombok.experimental.SuperBuilder;
 public class Patient extends User {
 
 
-    //    private String insurance;
     private String insuranceId;
-    //    private String insuranceGroup;
-//
-//
-//   private String emergencyContactName;
     private String emergencyContactPhone;
-//    private String emergencyContactRelation;
+
 
 
 }
