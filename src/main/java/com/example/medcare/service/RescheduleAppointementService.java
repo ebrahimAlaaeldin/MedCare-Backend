@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.medcare.dto.AppointmentDTO;
 import com.example.medcare.dto.ResponseMessageDto;
-import com.example.medcare.entities.Appointment;
 import com.example.medcare.repository.AppointmentRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -40,7 +39,6 @@ public class RescheduleAppointementService {
 
 
 
-        System.out.println("Appointment Time Not Available");
         return ResponseEntity.status(409).body(ResponseMessageDto.builder()
                 .message("Appointment Time Not Available")
                 .success(false)
