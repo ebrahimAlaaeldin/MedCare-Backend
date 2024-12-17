@@ -5,11 +5,12 @@ import com.example.medcare.Authorization.AuthenticationResponse;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.AuthenticationRequest;
 
-import com.example.medcare.dto.ResponseDTO;
+import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.entities.User;
 import com.example.medcare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -57,13 +58,20 @@ public class AuthenticateService {
             )
                     ;
             var token = jwtService.generateToken(claims, user);
-            return ResponseEntity.ok().body(ResponseDTO.builder().message("Authentication successful").statusCode(200).data(token).build());
+
+            return ResponseEntity.ok().body(ResponseMessageDto.builder().message("User authenticated successfully").success(true).statusCode(200).data(token).build());
 
         }
         catch (Exception e) {
 
-            return ResponseEntity.badRequest().body(ResponseDTO.builder().message(e.getMessage()).statusCode(400).data(null).build());
-
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(ResponseMessageDto.builder()
+                            .message(e.getMessage())
+                            .success(false)
+                            .statusCode(400)
+                            .data(null)
+                            .build());
         }
 
     }
@@ -82,9 +90,9 @@ public class AuthenticateService {
             )
                     ;
             var newToken = jwtService.generateToken(claims, user);
-            return ResponseEntity.ok().body(ResponseDTO.builder().message("Token refreshed").statusCode(200).data(newToken).build());
+            return ResponseEntity.ok().body(ResponseMessageDto.builder().message("Token refreshed successfully").success(true).statusCode(200).data(newToken).build());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(ResponseDTO.builder().message(e.getMessage()).statusCode(400).data(null).build());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseMessageDto.builder().message(e.getMessage()).success(false).statusCode(400).data(null).build());
         }
     }
 }

@@ -3,7 +3,6 @@ package com.example.medcare.Controllers;
 import com.example.medcare.controller.RegistrationController;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.PatientDTO;
-import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.service.AuthenticateService;
 import com.example.medcare.service.SignUpService;
 import org.junit.jupiter.api.BeforeEach;
