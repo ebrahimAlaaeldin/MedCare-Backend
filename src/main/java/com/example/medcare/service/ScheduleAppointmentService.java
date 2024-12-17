@@ -6,6 +6,7 @@ import com.example.medcare.entities.Appointment;
 import com.example.medcare.repository.AppointmentRepository;
 import com.example.medcare.repository.PatientRepository;
 import com.example.medcare.repository.DoctorRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,16 @@ public class ScheduleAppointmentService {
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
 
+
     public ResponseEntity<Object> scheduleAppointment(AppointmentDTO appointmentDTO){
+
+        if(appointmentDTO == null){
+                return ResponseEntity.status(400).body(ResponseMessageDto.builder()
+                .message("Invalid Request")
+                .success(false)
+                .statusCode(400)
+                .build());
+        }
 
         Appointment appointment = new Appointment();
 
