@@ -18,4 +18,7 @@ public class Address {
     private String zipCode;
     private String country;
 
+    public boolean isEmpty() {
+        return street == null && city == null && zipCode == null && country == null;
+    }
 }
