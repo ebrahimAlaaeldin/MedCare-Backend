@@ -9,6 +9,10 @@ import com.example.medcare.repository.AppointmentRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 @RequiredArgsConstructor
 @Service
 public class RescheduleAppointementService {
@@ -24,11 +28,15 @@ public class RescheduleAppointementService {
                     .build());
         }
 
+        LocalDate date = LocalDate.parse(newAppointmentTime.getAppointmentDate());
+        LocalTime time = LocalTime.parse(newAppointmentTime.getAppointmentTime());
+
+        LocalDateTime appointmentDateTime = LocalDateTime.of(date, time);
 
         boolean existsAnAppointment = appointmentRepository
-                .existsByDoctorIdAndAppointmentTime(appointment.getDoctor().getId(), newAppointmentTime.getAppointmentTime());
-                if (!existsAnAppointment) {
-                    appointment.setAppointmentTime(newAppointmentTime.getAppointmentTime());
+                .existsByDoctorUsernameAndAppointmentDateTime(appointment.getDoctor().getUsername(),appointmentDateTime );
+                    if (!existsAnAppointment) {
+                    appointment.setAppointmentDateTime(appointmentDateTime);
                     appointmentRepository.save(appointment);
                     return ResponseEntity.ok(ResponseMessageDto.builder()
                             .message("Appointment Rescheduled Successfully")

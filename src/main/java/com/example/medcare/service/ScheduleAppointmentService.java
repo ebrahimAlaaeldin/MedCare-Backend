@@ -12,6 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 @Service
 @RequiredArgsConstructor
 public class ScheduleAppointmentService {
@@ -31,7 +35,9 @@ public class ScheduleAppointmentService {
             .build());
         }
         
-        if(appointmentDTO.getPatientId() == null || appointmentDTO.getDoctorId() == null || appointmentDTO.getAppointmentTime() == null) {
+        if(appointmentDTO.getDoctorUsername() == null || appointmentDTO.getPatientUsername() == null ||
+                appointmentDTO.getAppointmentDate() == null || appointmentDTO.getAppointmentTime() == null){
+
             return ResponseEntity.badRequest().body(ResponseMessageDto.builder()
                     .message("Please provide all the required fields")
                     .success(false)
@@ -44,7 +50,7 @@ public class ScheduleAppointmentService {
         Appointment appointment = new Appointment();
 
         //check if patient exists
-        var patient = patientRepository.findById(appointmentDTO.getPatientId());
+        var patient = patientRepository.findByUsername(appointmentDTO.getPatientUsername());
 
         if (patient.isEmpty()) {
 
@@ -57,7 +63,7 @@ public class ScheduleAppointmentService {
 
 
         //check if doctor exists
-        var doctor = doctorRepository.findById(appointmentDTO.getDoctorId());
+        var doctor = doctorRepository.findByUsername(appointmentDTO.getDoctorUsername());
 
         if (doctor.isEmpty()) {
 
@@ -68,12 +74,17 @@ public class ScheduleAppointmentService {
             .statusCode(404)
             .build());
         }
+
+        LocalDate date = LocalDate.parse(appointmentDTO.getAppointmentDate());
+        LocalTime time = LocalTime.parse(appointmentDTO.getAppointmentTime());
+
+        LocalDateTime appointmentDateTime = LocalDateTime.of(date, time);
         
         //check if appointment time is available
-        boolean existsAnAppointment = appointmentRepository.existsByDoctorIdAndAppointmentTime(appointmentDTO.getDoctorId(), appointmentDTO.getAppointmentTime());
+        boolean existsAnAppointment = appointmentRepository.existsByDoctorUsernameAndAppointmentDateTime(
+                appointmentDTO.getDoctorUsername(), appointmentDateTime);
 
         if (existsAnAppointment) {
-
 
             return ResponseEntity.status(409).body(ResponseMessageDto.builder()
             .message("This time slot is reserved.")
@@ -85,7 +96,7 @@ public class ScheduleAppointmentService {
         //save appointment
         appointment.setPatient(patient.get());
         appointment.setDoctor(doctor.get());
-        appointment.setAppointmentTime(appointmentDTO.getAppointmentTime());
+        appointment.setAppointmentDateTime(appointmentDateTime);
         appointment.setCancelled(false);
         appointment.setConfirmed(false);
 
