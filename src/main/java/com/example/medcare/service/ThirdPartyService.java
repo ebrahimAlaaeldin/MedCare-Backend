@@ -1,19 +1,16 @@
 package com.example.medcare.service;
 
+
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.dto.TokenThirdPartyDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import com.example.medcare.entities.User;
 import com.example.medcare.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
-
 import com.example.medcare.config.*;
-
 import java.util.Map;
 
 @Service
@@ -43,6 +40,7 @@ public class ThirdPartyService {
                     .data(jwt)
                     .build());
         } catch (Exception e) {
+
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseMessageDto.builder()
                     .success(false)
                     .message("Failed to log in")

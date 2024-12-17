@@ -5,7 +5,6 @@ import com.example.medcare.Authorization.AuthenticationResponse;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.AuthenticationRequest;
 
-
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.entities.User;
 import com.example.medcare.repository.UserRepository;
@@ -59,6 +58,7 @@ public class AuthenticateService {
             )
                     ;
             var token = jwtService.generateToken(claims, user);
+
             return ResponseEntity.ok().body(ResponseMessageDto.builder().message("User authenticated successfully").success(true).statusCode(200).data(token).build());
 
         }

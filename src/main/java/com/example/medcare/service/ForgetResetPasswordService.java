@@ -46,6 +46,7 @@ public class ForgetResetPasswordService {
                 // Update the user's password
                 user.setPassword(passwordEncoder.encode(input.getNewPassword()));
                 userRepository.save(user);
+
                 return ResponseEntity.ok().body(ResponseMessageDto.builder()
                         .message("Password reset successfully")
                         .success(true)
@@ -93,7 +94,6 @@ public class ForgetResetPasswordService {
                                     "<p>Best regards,<br>The MedCare Team</p>"
                     )
                     .build();
-
 
             // Create a new ForgotPassword object with a unique OTP and an expiration time of 10 minutes
             ForgotPassword fp = ForgotPassword.builder()
@@ -155,6 +155,7 @@ public class ForgetResetPasswordService {
             );
             String jwtToken=jwtService.generateToken(otp,user);
             forgotPasswordRepository.delete(fp);
+
             return ResponseEntity.ok().body(ResponseMessageDto.builder()
                     .message("OTP validated successfully")
                     .success(true)
@@ -198,6 +199,7 @@ public class ForgetResetPasswordService {
             );
 
             String jwtToken = jwtService.generateToken(claims,user);
+
             return ResponseEntity.ok().body(ResponseMessageDto.builder()
                     .message("Password changed successfully")
                     .success(true)
@@ -205,6 +207,7 @@ public class ForgetResetPasswordService {
                     .data(jwtToken)
                     .build());
         } catch (Exception e) {
+
             return ResponseEntity.badRequest().body(ResponseMessageDto.builder()
                     .message(e.getMessage())
                     .success(false)

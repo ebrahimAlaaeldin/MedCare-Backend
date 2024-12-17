@@ -5,16 +5,12 @@ import com.example.medcare.Enums.Role;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.PatientDTO;
-
-
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.embedded.License;
 import com.example.medcare.entities.Doctor;
 import com.example.medcare.entities.Patient;
-
 import com.example.medcare.repository.DoctorRepository;
 import com.example.medcare.repository.PatientRepository;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
@@ -39,7 +35,6 @@ public class SignUpService {
 
 
     public ResponseEntity<Object> patientSignUp(PatientDTO signUpRequest) {
-
 
         try {
             String jwtToken = savePatient(signUpRequest);
@@ -155,5 +150,6 @@ public class SignUpService {
         LocalDate currentDate = LocalDate.now();
         Period period = Period.between(dateOfBirth, currentDate);
         return period.getYears();
+
     }
 }
