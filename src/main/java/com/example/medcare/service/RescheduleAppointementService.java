@@ -31,7 +31,7 @@ public class RescheduleAppointementService {
         }
 
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime appointmentDateTime = LocalDateTime.parse(newAppointmentTime.getAppointmentTime(), formatter);
         boolean existsAnAppointment = appointmentRepository
                 .existsByDoctorUsernameAndAppointmentDateTime(appointment.getDoctor().getUsername(),appointmentDateTime );

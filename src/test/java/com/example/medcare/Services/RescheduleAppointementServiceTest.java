@@ -33,7 +33,7 @@ public class RescheduleAppointementServiceTest {
 void setUp() {
     MockitoAnnotations.openMocks(this);
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     // Set up existing appointment
     existingAppointment = new Appointment();
@@ -42,22 +42,22 @@ void setUp() {
     doctor.setId(2);
     doctor.setUsername("doctor");
     existingAppointment.setDoctor(doctor);
-    existingAppointment.setAppointmentDateTime(LocalDateTime.parse("2025-12-17 12:00:00", formatter));
+    existingAppointment.setAppointmentDateTime(LocalDateTime.parse("2025-12-17 12:00", formatter));
 
     // Set up new appointment DTO
     newAppointmentDTO = new AppointmentDTO();
     newAppointmentDTO.setDoctorUsername("doctor");
-    newAppointmentDTO.setAppointmentTime("2025-12-17 12:00:00");
+    newAppointmentDTO.setAppointmentTime("2025-12-17 12:00");
     newAppointmentDTO.setAppointmentId(1);
 }
 
 
    @Test
    void testRescheduleAppointment_Success() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
        // Mock repository behavior
        when(appointmentRepository.findByAppointmentId(1)).thenReturn(existingAppointment);
-        when(appointmentRepository.existsByDoctorUsernameAndAppointmentDateTime("doctor", LocalDateTime.parse("2025-12-17 12:00:00",formatter))).thenReturn(false);
+        when(appointmentRepository.existsByDoctorUsernameAndAppointmentDateTime("doctor", LocalDateTime.parse("2025-12-17 12:00",formatter))).thenReturn(false);
 
        // Call the service method
        ResponseEntity<Object> response = rescheduleAppointementService.rescheduleAppointment(newAppointmentDTO);
@@ -71,10 +71,10 @@ void setUp() {
 
    @Test
    void testRescheduleAppointment_TimeNotAvailable() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
          // Mock repository behavior
          when(appointmentRepository.findByAppointmentId(1)).thenReturn(existingAppointment);
-         when(appointmentRepository.existsByDoctorUsernameAndAppointmentDateTime("doctor", LocalDateTime.parse("2025-12-17 12:00:00",formatter))).thenReturn(true);
+         when(appointmentRepository.existsByDoctorUsernameAndAppointmentDateTime("doctor", LocalDateTime.parse("2025-12-17 12:00",formatter))).thenReturn(true);
     
          // Call the service method
          ResponseEntity<Object> response = rescheduleAppointementService.rescheduleAppointment(newAppointmentDTO);
