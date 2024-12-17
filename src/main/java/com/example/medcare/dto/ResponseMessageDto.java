@@ -10,7 +10,7 @@ import lombok.Data;
 @Builder
 public class ResponseMessageDto {
     private String message;
-    private Boolean success;
+    private boolean success;
     private Integer statusCode;
     private Object data;
 

@@ -8,4 +8,5 @@ import java.time.LocalDateTime;
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
     boolean existsByDoctorIdAndAppointmentTime(Integer doctorId, String appointmentTime);
+
 }

@@ -8,6 +8,7 @@ import com.example.medcare.repository.AppointmentRepository;
 import com.example.medcare.repository.PatientRepository;
 import com.example.medcare.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,45 +19,45 @@ public class ScheduleAppointmentService {
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
 
-    public ResponseMessageDto scheduleAppointment(AppointmentDTO appointmentDTO){
+    public ResponseMessageDto scheduleAppointment(AppointmentDTO appointmentDTO) {
 
         Appointment appointment = new Appointment();
 
         //check if patient exists
         var patient = patientRepository.findById(appointmentDTO.getPatientId());
 
-        if(patient.isEmpty()){
+        if (patient.isEmpty()) {
 
             return ResponseMessageDto.builder()
-            .message("Patient Not Found")
-            .success(false)
-            .statusCode(401)
-            .build();
+                    .message("Patient Not Found")
+                    .success(false)
+                    .statusCode(401)
+                    .build();
         }
-        
+
 
         //check if doctor exists
         var doctor = doctorRepository.findById(appointmentDTO.getDoctorId());
 
-        if(doctor.isEmpty()){
+        if (doctor.isEmpty()) {
 
             return ResponseMessageDto.builder()
-            .message("Doctor Not Found")
-            .success(false)
-            .statusCode(401)
-            .build();
+                    .message("Doctor Not Found")
+                    .success(false)
+                    .statusCode(401)
+                    .build();
         }
 
         //check if appointment time is available
         boolean existsAnAppointment = appointmentRepository.existsByDoctorIdAndAppointmentTime(appointmentDTO.getDoctorId(), appointmentDTO.getAppointmentTime());
-        
-        if(existsAnAppointment){
+
+        if (existsAnAppointment) {
 
             return ResponseMessageDto.builder()
-            .message("Appointment Time Not Available")
-            .success(false)
-            .statusCode(401)
-            .build();
+                    .message("Appointment Time Not Available")
+                    .success(false)
+                    .statusCode(401)
+                    .build();
         }
 
         //save appointment
@@ -70,35 +71,10 @@ public class ScheduleAppointmentService {
         appointmentRepository.save(appointment);
 
         return ResponseMessageDto.builder()
-        .message("Appointment Scheduled Successfully")
-        .success(true)
-        .statusCode(200)
-        .build();
-    }
-    public ResponseMessageDto cancelAppointment(CancelDTO cancelDTO){
+                .message("Appointment Scheduled Successfully")
+                .success(true)
+                .statusCode(200)
+                .build();
 
-        //check if appointment exists
-        var appointment = appointmentRepository.findById(cancelDTO.getAppointmentId());
-
-        if(appointment.isEmpty()){
-
-            return ResponseMessageDto.builder()
-            .message("Appointment Not Found")
-            .success(false)
-            .statusCode(401)
-            .build();
-        }
-
-        //cancel appointment
-        appointment.get().setCancelled(true);
-
-        //save to database
-        appointmentRepository.save(appointment.get());
-
-        return ResponseMessageDto.builder()
-        .message("Appointment Cancelled Successfully")
-        .success(true)
-        .statusCode(200)
-        .build();
     }
 }

@@ -5,6 +5,7 @@ import com.example.medcare.dto.AppointmentDTO;
 import com.example.medcare.dto.CancelDTO;
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.entities.Appointment;
+import com.example.medcare.service.CancelAppointmentService;
 import com.example.medcare.service.ScheduleAppointmentService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class ScheduleController {
 
     private final ScheduleAppointmentService scheduleAppointmentService;
+    private final CancelAppointmentService cancelappointmentService;
 
     @PostMapping("/schedule")
     public ResponseEntity<ResponseMessageDto> scheduleAppointment(
@@ -30,9 +32,9 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleAppointmentService.scheduleAppointment(requestForAppointment));
     }
     @PostMapping("/cancel")
-    public ResponseEntity<ResponseMessageDto> cancelAppointment(
+    public ResponseEntity<ResponseEntity<Object>> cancelAppointment(
             @RequestBody CancelDTO requestForCancelations) {
         // Cancel an appointment
-        return ResponseEntity.ok(scheduleAppointmentService.cancelAppointment(requestForCancelations));
+        return ResponseEntity.ok(cancelappointmentService.cancelAppointment(requestForCancelations));
     }
 }
