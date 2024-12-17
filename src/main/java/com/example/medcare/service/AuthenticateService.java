@@ -47,7 +47,7 @@ public class AuthenticateService {
                 throw new IllegalArgumentException("Invalid request");
             }
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username,request.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
 
             );
             Map<String, Object> claims = Map.of("role", user.getRole().toString(),
@@ -95,4 +95,9 @@ public class AuthenticateService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseMessageDto.builder().message(e.getMessage()).success(false).statusCode(400).data(null).build());
         }
     }
+
+
+
+
+
 }

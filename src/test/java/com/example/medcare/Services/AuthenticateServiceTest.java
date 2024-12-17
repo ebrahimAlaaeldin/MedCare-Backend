@@ -1,4 +1,5 @@
-package com.example.medcare.Service;
+package com.example.medcare.Services;
+
 import com.example.medcare.Enums.Role;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.AuthenticationRequest;
@@ -11,16 +12,20 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-class AuthenticateServiceTest {
+public class AuthenticateServiceTest {
 
     @Mock
     private JwtService jwtService;
@@ -28,9 +33,8 @@ class AuthenticateServiceTest {
     @Mock
     private AuthenticationManager authenticationManager;
 
-    @Mock //
+    @Mock
     private UserRepository userRepository;
-
 
     @InjectMocks
     private AuthenticateService authenticateService;
@@ -41,29 +45,50 @@ class AuthenticateServiceTest {
     }
 
     @Test
-    void testAuthenticateSuccess() {
+    void testAuthenticateWithUsernameSuccess() {
         // Arrange
-        var request = new AuthenticationRequest("validUser", "validPassword");
-        var user = new User();
-        user.setUsername("validUser");
-        user.setRole(Role.PATIENT);
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setEmail("john.doe@example.com");
+        var request = new AuthenticationRequest("validUser", null, "validPassword");
+        var user = createUser();
 
         when(userRepository.findByUsername("validUser")).thenReturn(Optional.of(user));
         when(jwtService.generateToken(anyMap(), eq(user))).thenReturn("mockToken");
 
         // Act
-        var response = authenticateService.authenticate(request);
+        ResponseEntity<Object> response = authenticateService.authenticate(request);
+        ResponseMessageDto dto = (ResponseMessageDto) response.getBody();
 
         // Assert
-        assertTrue(response instanceof ResponseMessageDto);
-        ResponseMessageDto dto = (ResponseMessageDto) response;
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(dto);
         assertEquals(200, dto.getStatusCode());
-        assertEquals("Authentication successful", dto.getMessage());
         assertTrue(dto.isSuccess());
         assertEquals("mockToken", dto.getData());
+        assertEquals("User authenticated successfully", dto.getMessage());
+
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(jwtService).generateToken(anyMap(), eq(user));
+    }
+
+    @Test
+    void testAuthenticateWithEmailSuccess() {
+        // Arrange
+        var request = new AuthenticationRequest(null, "john.doe@example.com", "validPassword");
+        var user = createUser();
+
+        when(userRepository.findByEmail("john.doe@example.com")).thenReturn(Optional.of(user));
+        when(jwtService.generateToken(anyMap(), eq(user))).thenReturn("mockToken");
+
+        // Act
+        ResponseEntity<Object> response = authenticateService.authenticate(request);
+        ResponseMessageDto dto = (ResponseMessageDto) response.getBody();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(dto);
+        assertEquals(200, dto.getStatusCode());
+        assertTrue(dto.isSuccess());
+        assertEquals("mockToken", dto.getData());
+        assertEquals("User authenticated successfully", dto.getMessage());
 
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(jwtService).generateToken(anyMap(), eq(user));
@@ -72,68 +97,79 @@ class AuthenticateServiceTest {
     @Test
     void testAuthenticateInvalidCredentials() {
         // Arrange
-        var request = new AuthenticationRequest("invalidUser", "invalidPassword");
+        var request = new AuthenticationRequest("invalidUser", null, "wrongPassword");
+        var user = createUser(); // Create a mock user
 
+        when(userRepository.findByUsername("invalidUser")).thenReturn(Optional.of(user)); // Simulate user existence
         doThrow(new BadCredentialsException("Invalid credentials"))
                 .when(authenticationManager)
                 .authenticate(any(UsernamePasswordAuthenticationToken.class));
 
         // Act
-        var response = authenticateService.authenticate(request);
+        ResponseEntity<Object> response = authenticateService.authenticate(request);
+        ResponseMessageDto dto = (ResponseMessageDto) response.getBody();
 
         // Assert
-        assertTrue(response instanceof ResponseMessageDto);
-        ResponseMessageDto dto = (ResponseMessageDto) response;
-        assertEquals(401, dto.getStatusCode());
-        assertEquals("Invalid credentials", dto.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertNotNull(dto);
+        assertEquals(400, dto.getStatusCode());
         assertFalse(dto.isSuccess());
+        assertEquals("Invalid credentials", dto.getMessage());
+        assertNull(dto.getData());
 
+        verify(userRepository).findByUsername("invalidUser");
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verifyNoInteractions(jwtService, userRepository);
-    }
-
-    @Test
-    void testAuthenticateUserNotFound() {
-        // Arrange
-        var request = new AuthenticationRequest("nonExistentUser", "password");
-
-        when(userRepository.findByUsername("nonExistentUser"))
-                .thenReturn(Optional.empty());
-
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            authenticateService.authenticate(request);
-        });
-
-        assertEquals("User not found", exception.getMessage());
-        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(userRepository).findByUsername("nonExistentUser");
         verifyNoInteractions(jwtService);
     }
 
     @Test
-    void testAuthenticateJwtGenerationFailure() {
+    void testAuthenticateUserNotFoundByUsername() {
         // Arrange
-        var request = new AuthenticationRequest("validUser", "validPassword");
-        var user = new User();
-        user.setUsername("validUser");
-        user.setRole(Role.PATIENT);
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setEmail("john.doe@example.com");
-
-        when(userRepository.findByUsername("validUser")).thenReturn(Optional.of(user));
-        when(jwtService.generateToken(anyMap(), eq(user)))
-                .thenThrow(new RuntimeException("JWT generation error"));
+        var request = new AuthenticationRequest("nonExistentUser", null, "password");
+        when(userRepository.findByUsername("nonExistentUser")).thenReturn(Optional.empty());
 
         // Act
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            authenticateService.authenticate(request);
-        });
+        ResponseEntity<Object> response = authenticateService.authenticate(request);
+        ResponseMessageDto dto = (ResponseMessageDto) response.getBody();
 
         // Assert
-        assertEquals("JWT generation error", exception.getMessage());
-        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(jwtService).generateToken(anyMap(), eq(user));
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertNotNull(dto);
+        assertEquals(400, dto.getStatusCode());
+        assertFalse(dto.isSuccess());
+        assertEquals("User not found", dto.getMessage());
+
+        verify(userRepository).findByUsername("nonExistentUser");
+        verifyNoInteractions(authenticationManager, jwtService);
+    }
+
+    @Test
+    void testAuthenticateInvalidRequest() {
+        // Arrange
+        var request = new AuthenticationRequest(null, null, "password");
+
+        // Act
+        ResponseEntity<Object> response = authenticateService.authenticate(request);
+        ResponseMessageDto dto = (ResponseMessageDto) response.getBody();
+
+        // Assert
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertNotNull(dto);
+        assertEquals(400, dto.getStatusCode());
+        assertFalse(dto.isSuccess());
+        assertEquals("Invalid request", dto.getMessage());
+
+        verifyNoInteractions(userRepository, authenticationManager, jwtService);
+    }
+
+    private User createUser() {
+        User user = new User();
+        user.setUsername("validUser");
+        user.setEmail("john.doe@example.com");
+        user.setFirstName("John");
+        user.setLastName("Doe");
+        user.setRole(Role.PATIENT);
+        
+        return user;
     }
 }
