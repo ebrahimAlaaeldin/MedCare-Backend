@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class ReminderScheduler {
 
     private final ReminderService reminderService;
-    @Scheduled(fixedRate = 20000) // 30 seconds
+    @Scheduled(fixedRate = 2000000) // 30 seconds
     public void sendReminder() {
         System.out.println("Sending reminder");
         reminderService.sendReminder();
