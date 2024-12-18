@@ -23,7 +23,7 @@ public class MedCareApplication {
 
     @Bean
     public CommandLineRunner commandLineRunner(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        
+    
         return args -> {
             // Build a supedAdmin
             User superAdmin = User.builder()

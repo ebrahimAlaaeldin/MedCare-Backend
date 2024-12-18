@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 
-public class ClinicDTO{
+public class ClinicDTO {
+
+    private int clinicId;
 
     private String clinicName;
 

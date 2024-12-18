@@ -35,7 +35,7 @@ public class Clinic {
 
     private LocalDate createdAt;
 
-    @OneToOne()
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "clinicAdminId")
     private ClinicAdmin clinicAdmin;
 }

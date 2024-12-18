@@ -4,21 +4,21 @@ import com.example.medcare.controller.SuperAdminController;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.service.SuperAdminService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -36,8 +36,8 @@ class SuperAdminControllerTest {
 
     private DoctorDTO doctorDTO;
 
-    private ResponseMessageDto successResponse;
-    private ResponseMessageDto notFoundResponse;
+    private ResponseEntity<Object> successResponse;
+    private ResponseEntity<Object> notFoundResponse;
 
     @BeforeEach
     void setUp() {
@@ -52,19 +52,11 @@ class SuperAdminControllerTest {
         doctorDTO.setEmail("john.doe@example.com");
         doctorDTO.setPhoneNumber("1234567890");
 
-         successResponse = ResponseMessageDto
-                .builder()
-                 .message("Doctor application approved")
-                    .success(true)
-                        .statusCode(200)
-                .build();
-
-         notFoundResponse = ResponseMessageDto
-                .builder()
-                 .message("Doctor not found")
-                 .success(false)
-                    .statusCode(404)    
-                .build();
+        // Sample response messages
+        successResponse = ResponseEntity.ok()
+        .body(new ResponseMessageDto("Doctor application approved", true, 200, doctorDTO));
+        notFoundResponse = ResponseEntity
+        .status(404).body(new ResponseMessageDto("Doctor not found", false, 404, doctorDTO));
     }
 
     @Test
@@ -91,27 +83,46 @@ class SuperAdminControllerTest {
                 .andExpect(jsonPath("$[0].lastName").value("Doe"));
     }
 
-    @Test
+       @Test
     void testApproveDoctorApplication_Success() throws Exception {
-        // Mock the service method to approve doctor
-        doNothing().when(superAdminService).approveDoctorApplication(anyString());
-
-        // Perform PUT request for approving a doctor
-        mockMvc.perform(put("/api/v1/SuperAdmin/doctorApplications/approve/doctor1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()) // HTTP 200 on success
-                .andExpect(content().string("Doctor application approved"));
+        // Configure mock response
+        when(superAdminService.approveDoctorApplication(any(DoctorDTO.class))).thenReturn(successResponse);
+    
+        // Convert DTO to JSON
+        String jsonRequest = new ObjectMapper().writeValueAsString(doctorDTO);
+    
+        // Perform PUT request with JSON body
+        mockMvc.perform(put("/api/v1/SuperAdmin/doctorApplications/approve")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Doctor application approved"))
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.statusCode").value(200));
+    
+        // Verify service method was called
+        verify(superAdminService).approveDoctorApplication(any(DoctorDTO.class));
     }
 
     
-   /*  @Test
-    void testApproveDoctorApplication_NotFound() throws Exception {
-        when(superAdminService.approveDoctorApplication("unknownDoctor")).thenReturn(notFoundResponse);
-
-        mockMvc.perform(put("/api/v1/SuperAdmin/doctorApplications/approve/unknownDoctor")
-                .contentType(MediaType.APPLICATION_JSON))
+   @Test
+    void testApproveDoctorApplication_Failed() throws Exception {
+        // Configure mock response
+        when(superAdminService.approveDoctorApplication(any(DoctorDTO.class))).thenReturn(notFoundResponse);
+    
+        // Convert DTO to JSON
+        String jsonRequest = new ObjectMapper().writeValueAsString(doctorDTO);
+    
+        // Perform PUT request with JSON body
+        mockMvc.perform(put("/api/v1/SuperAdmin/doctorApplications/approve")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Doctor not found"))
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.statusCode").value(404));
-    } */
+    
+        // Verify service method was called
+        verify(superAdminService).approveDoctorApplication(any(DoctorDTO.class));
+    }
 }
