@@ -96,15 +96,16 @@ class ScheduleAppointmentServiceTest {
     void testScheduleAppointmentSuccess() {
         // Given
         AppointmentDTO appointmentDTO = AppointmentDTO.builder()
-                .patientId(PATIENT.getId())
-                .doctorId(DOCTOR.getId())
-                .appointmentTime("202-2-12 12:00")
+                .patientUsername(PATIENT.getUsername())
+                .doctorUsername(DOCTOR.getUsername())
+                .appointmentDate("2024-12-12")
+                .appointmentTime("10:00")
                 .build();
 
 
-        when(patientRepository.findById(any())).thenReturn(Optional.of(PATIENT));
-        when(doctorRepository.findById(any())).thenReturn(Optional.of(DOCTOR));
-        when(appointmentRepository.existsByDoctorIdAndAppointmentTime(any(), any())).thenReturn(false);
+        when(patientRepository.findByUsername(any())).thenReturn(Optional.of(PATIENT));
+        when(doctorRepository.findByUsername(any())).thenReturn(Optional.of(DOCTOR));
+        when(appointmentRepository.existsByDoctorUsernameAndAppointmentDateTime(any(), any())).thenReturn(false);
 
         // When
         ResponseEntity<Object> response = scheduleAppointmentService.scheduleAppointment(appointmentDTO);
@@ -119,12 +120,14 @@ class ScheduleAppointmentServiceTest {
     void testScheduleAppointmentWhenPatientIsNotFound() {
         // Given
         AppointmentDTO appointmentDTO = AppointmentDTO.builder()
-                .patientId(PATIENT.getId())
-                .doctorId(DOCTOR.getId())
-                .appointmentTime("202-2-12 12:00")
-                .build();
+                        .patientUsername(PATIENT.getUsername())
+                        .doctorUsername(DOCTOR.getUsername())
+                        .appointmentDate("2024-12-12")
+                        .appointmentTime("10:00")
+                        .build();
 
-        when(patientRepository.findById(any())).thenReturn(Optional.empty());
+
+        when(patientRepository.findByUsername(any())).thenReturn(Optional.empty());
 
         // When
         ResponseEntity<Object> response = scheduleAppointmentService.scheduleAppointment(appointmentDTO);
@@ -139,12 +142,14 @@ class ScheduleAppointmentServiceTest {
     void testScheduleAppointmentWhenDoctorIsNotFound() {
         // Given
         AppointmentDTO appointmentDTO = AppointmentDTO.builder()
-                .patientId(PATIENT.getId())
-                .doctorId(DOCTOR.getId())
-                .appointmentTime("202-2-12 12:00")
+                .patientUsername(PATIENT.getUsername())
+                .doctorUsername(DOCTOR.getUsername())
+                .appointmentDate("2024-12-12")
+                .appointmentTime("10:00")
                 .build();
-        when(patientRepository.findById(any())).thenReturn(Optional.of(PATIENT));
-        when(doctorRepository.findById(any())).thenReturn(Optional.empty());
+
+        when(patientRepository.findByUsername(any())).thenReturn(Optional.of(PATIENT));
+        when(doctorRepository.findByUsername(any())).thenReturn(Optional.empty());
 
         // When
         ResponseEntity<Object> response = scheduleAppointmentService.scheduleAppointment(appointmentDTO);
@@ -159,14 +164,16 @@ class ScheduleAppointmentServiceTest {
     void testScheduleAppointmentWhenSlotIsReserved() {
         // Given
         AppointmentDTO appointmentDTO = AppointmentDTO.builder()
-                .patientId(PATIENT.getId())
-                .doctorId(DOCTOR.getId())
-                .appointmentTime("202-2-12 12:00")
-                .build();
+                        .patientUsername(PATIENT.getUsername())
+                        .doctorUsername(DOCTOR.getUsername())
+                        .appointmentDate("2024-12-12")
+                        .appointmentTime("10:00")
+                        .build();
 
-        when(patientRepository.findById(any())).thenReturn(Optional.of(PATIENT));
-        when(doctorRepository.findById(any())).thenReturn(Optional.of(DOCTOR));
-        when(appointmentRepository.existsByDoctorIdAndAppointmentTime(any(), any())).thenReturn(true);
+
+        when(patientRepository.findByUsername(any())).thenReturn(Optional.of(PATIENT));
+        when(doctorRepository.findByUsername(any())).thenReturn(Optional.of(DOCTOR));
+        when(appointmentRepository.existsByDoctorUsernameAndAppointmentDateTime(any(), any())).thenReturn(true);
 
         // When
         ResponseEntity<Object> response = scheduleAppointmentService.scheduleAppointment(appointmentDTO);
@@ -202,22 +209,26 @@ class ScheduleAppointmentServiceTest {
     void testConcurrentAppointmentSchedulingForSameSlot() {
         // Given
         AppointmentDTO appointmentDTO1 = AppointmentDTO.builder()
-                .patientId(PATIENT.getId())
-                .doctorId(DOCTOR.getId())
-                .appointmentTime("2024-12-12 10:00")
+                .patientUsername(PATIENT.getUsername())
+                .doctorUsername(DOCTOR.getUsername())
+                .appointmentDate("2024-12-12")
+                .appointmentTime("10:00")
                 .build();
+
 
         AppointmentDTO appointmentDTO2 = AppointmentDTO.builder()
-                .patientId(PATIENT.getId() + 1) // Another patient
-                .doctorId(DOCTOR.getId())
-                .appointmentTime("2024-12-12 10:00")
+                .patientUsername(PATIENT.getUsername() + "2")
+                .doctorUsername(DOCTOR.getUsername())
+                .appointmentDate("2024-12-12")
+                .appointmentTime("10:00")
                 .build();
 
-        when(patientRepository.findById(PATIENT.getId())).thenReturn(Optional.of(PATIENT));
-        when(patientRepository.findById(PATIENT.getId() + 1)).thenReturn(Optional.of(PATIENT)); // Another patient
-        when(doctorRepository.findById(any())).thenReturn(Optional.of(DOCTOR));
-        when(appointmentRepository.existsByDoctorIdAndAppointmentTime(any(), any())).thenReturn(false);
 
+
+        when(patientRepository.findByUsername(PATIENT.getUsername())).thenReturn(Optional.of(PATIENT));
+        when(patientRepository.findByUsername(PATIENT.getUsername() + "2")).thenReturn(Optional.of(PATIENT)); // Another patient
+        when(doctorRepository.findByUsername(DOCTOR.getUsername())).thenReturn(Optional.of(DOCTOR));
+        when(appointmentRepository.existsByDoctorUsernameAndAppointmentDateTime(any(), any())).thenReturn(false);
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
         Callable<ResponseEntity<Object>> task1 = () -> scheduleAppointmentService.scheduleAppointment(appointmentDTO1);
@@ -225,7 +236,7 @@ class ScheduleAppointmentServiceTest {
         ResponseEntity<Object> response1 = future1.get();
 
 
-        when(appointmentRepository.existsByDoctorIdAndAppointmentTime(any(), any())).thenReturn(true);
+        when(appointmentRepository.existsByDoctorUsernameAndAppointmentDateTime(any(), any())).thenReturn(true);
 
         Callable<ResponseEntity<Object>> task2 = () -> scheduleAppointmentService.scheduleAppointment(appointmentDTO2);
         Future<ResponseEntity<Object>> future2 = executor.submit(task2);

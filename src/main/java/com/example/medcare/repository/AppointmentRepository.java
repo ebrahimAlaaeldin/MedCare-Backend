@@ -9,9 +9,10 @@ import java.util.List;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
-    boolean existsByDoctorIdAndAppointmentTime(Integer doctorId, String appointmentTime);
+//    boolean existsByDoctorIdAndAppointmentTime(Integer doctorId, String appointmentTime);
+    boolean existsByDoctorUsernameAndAppointmentDateTime(String doctorUsername, LocalDateTime appointmentDateTime);
 
-    Appointment findByDoctorIdAndAppointmentTime(Integer doctorId, String appointmentTime);
+//    Appointment findByDoctorIdAndAppointmentTime(Integer doctorId, String appointmentTime);
     Appointment findByAppointmentId(Integer appointmentId);
     List<Appointment> findAllByPatient(Patient patient);
 
