@@ -1,16 +1,13 @@
 package com.example.medcare.service;
 
 import com.example.medcare.dto.AppointmentDTO;
-import com.example.medcare.dto.CancelDTO;
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.entities.Appointment;
-import com.example.medcare.entities.Patient;
 import com.example.medcare.entities.User;
 import com.example.medcare.repository.AppointmentRepository;
 import com.example.medcare.repository.PatientRepository;
 import com.example.medcare.repository.DoctorRepository;
 import com.example.medcare.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,8 +15,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -118,7 +117,6 @@ public class ScheduleAppointmentService {
     }
 
     public ResponseEntity<Object> viewAppointmentsForCertainPatient(String patientUsername) {
-        System.out.println("Patient Username: " + patientUsername);
         if (patientUsername == null || patientUsername.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(ResponseMessageDto.builder()
                     .message("Invalid Request: Username is null or empty.")
@@ -136,8 +134,21 @@ public class ScheduleAppointmentService {
                     .build());
         }
 
-        System.out.println("Found");
         List<Appointment> appointments = appointmentRepository.findByPatient_Username(patientUsername);
+        List<AppointmentDTO> appointmentDTOs = new ArrayList<>();
+
+        for(Appointment appointment : appointments){
+            appointmentDTOs.add(AppointmentDTO.builder()
+                    .appointmentId(appointment.getAppointmentId())
+                    .patientUsername(appointment.getPatient().getUsername())
+                    .doctorUsername(appointment.getDoctor().getUsername())
+                    .appointmentDate(appointment.getAppointmentDateTime().toLocalDate().toString())
+                    .appointmentTime(appointment.getAppointmentDateTime().toLocalTime().toString())
+                    .isConfirmed(appointment.isConfirmed())
+                    .isCancelled(appointment.isCancelled())
+                    .build());
+        }
+
         if (appointments.isEmpty()) {
             return ResponseEntity.ok(ResponseMessageDto.builder()
                     .message("No Appointments Found")
@@ -150,7 +161,7 @@ public class ScheduleAppointmentService {
                 .message("Appointments for " + patientUsername)
                 .success(true)
                 .statusCode(200)
-                .data(appointments)
+                .data(appointmentDTOs)
                 .build());
     }
 }
