@@ -9,7 +9,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,16 +48,16 @@ public class SuperAdminController {
     }
 
     // approve doctor application
-    @PutMapping("/doctorApplications/approve/{username}")
+    @PutMapping("/doctorApplications/approve")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public ResponseEntity<String> approveDoctorApplication(@PathVariable String username) {
-        superAdminService.approveDoctorApplication(username);
-        return new ResponseEntity<>("Doctor application approved", HttpStatus.OK);
+    public ResponseEntity<Object> approveDoctorApplication(@RequestBody DoctorDTO doctorDTO) {
+        return superAdminService.approveDoctorApplication(doctorDTO);
     }
 
 
     // Super Admin review Clinic applications 
     @GetMapping("/clinicApplications/pending")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<List<ClinicDTO>> viewPendingClinicApplications() {
         try {
             List<ClinicDTO> pendingClinics = superAdminService.getPendingClinics();
