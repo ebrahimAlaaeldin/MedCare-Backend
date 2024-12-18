@@ -55,7 +55,7 @@ class ClinicRegistrationServiceTest {
     private ClinicPermit permit;
 
     @BeforeEach
-    void setUp() {
+   public void setUp() {
         address = Address.builder()
                 .street("Test Street")
                 .city("Test City")
@@ -105,22 +105,34 @@ class ClinicRegistrationServiceTest {
     }
 
     @Test
-    void registerClinic_Success() {
+    public void registerClinic_Success() {
+            when(clinicAdminRepository.findByUsername(anyString()))
+                            .thenReturn(Optional.of(clinicAdmin));
+            when(clinicRepository.save(any(Clinic.class)))
+                            .thenReturn(clinic);
+
+            ResponseEntity<ResponseMessageDto> response = clinicRegistrationService.registerClinic(clinicDTO);
+
+            assertEquals(200, response.getStatusCode().value());
+            assertTrue(response.getBody().isSuccess());
+            assertEquals("Clinic registered successfully", response.getBody().getMessage());
+            verify(clinicRepository).save(any(Clinic.class));
+    }
+    
+    @Test
+    public void registerClinic_Failure() {
         when(clinicAdminRepository.findByUsername(anyString()))
-                .thenReturn(Optional.of(clinicAdmin));
-        when(clinicRepository.save(any(Clinic.class)))
-                .thenReturn(clinic);
+                .thenReturn(Optional.empty());
 
         ResponseEntity<ResponseMessageDto> response = clinicRegistrationService.registerClinic(clinicDTO);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertTrue(response.getBody().isSuccess());
-        assertEquals("Clinic registered successfully", response.getBody().getMessage());
-        verify(clinicRepository).save(any(Clinic.class));
+        assertEquals(400, response.getStatusCode().value());
+        assertFalse(response.getBody().isSuccess());
+        assertTrue(response.getBody().getMessage().contains("Admin not found"));
     }
 
     @Test
-    void registerClinicAndAdmin_Success() {
+    public void registerClinicAndAdmin_Success() {
         when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
         when(signUpService.calculateAge(any())).thenReturn(30);
         when(clinicRepository.save(any(Clinic.class))).thenReturn(clinic);
@@ -135,7 +147,7 @@ class ClinicRegistrationServiceTest {
     }
 
     @Test
-    void registerClinicAndAdmin_ValidationFailure() {
+    public void registerClinicAndAdmin_ValidationFailure() {
         clinicDTO.setClinicAdmin(null);
 
         ResponseEntity<ResponseMessageDto> response = clinicRegistrationService

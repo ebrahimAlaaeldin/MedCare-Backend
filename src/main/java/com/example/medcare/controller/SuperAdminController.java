@@ -28,34 +28,24 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin
 public class SuperAdminController {
 
-
     private final SuperAdminService superAdminService;
-
-
 
     @GetMapping("/doctorApplications/pending")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<List<DoctorDTO>> getPendingApplications() {
-
         List<DoctorDTO> pendingApplications = superAdminService.returnPendingApplications();
-
-        if (pendingApplications.isEmpty())
+        if (pendingApplications.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        else
-            return new ResponseEntity<>(pendingApplications, HttpStatus.OK);
-
-        
+        }
+        return new ResponseEntity<>(pendingApplications, HttpStatus.OK);
     }
 
-    // approve doctor application
     @PutMapping("/doctorApplications/approve")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<Object> approveDoctorApplication(@RequestBody DoctorDTO doctorDTO) {
         return superAdminService.approveDoctorApplication(doctorDTO);
     }
 
-
-    // Super Admin review Clinic applications 
     @GetMapping("/clinicApplications/pending")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<List<ClinicDTO>> viewPendingClinicApplications() {
@@ -63,7 +53,16 @@ public class SuperAdminController {
             List<ClinicDTO> pendingClinics = superAdminService.getPendingClinics();
             return new ResponseEntity<>(pendingClinics, HttpStatus.OK);
         } catch (NotFoundException e) {
-            return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
         }
     }
+
+    @PutMapping("/clinicApplications/approve/{clinicId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<Object> approveClinicApplication(@PathVariable int clinicId) {
+        return superAdminService.approveClinicApplication(clinicId);
+    }
+
 }
+
+
