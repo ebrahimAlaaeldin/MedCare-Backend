@@ -138,6 +138,9 @@ public class ScheduleAppointmentService {
         List<AppointmentDTO> appointmentDTOs = new ArrayList<>();
 
         for(Appointment appointment : appointments){
+            if (appointment.isCancelled()) {
+                continue;
+            }
             appointmentDTOs.add(AppointmentDTO.builder()
                     .appointmentId(appointment.getAppointmentId())
                     .patientUsername(appointment.getPatient().getUsername())

@@ -10,6 +10,7 @@ import com.example.medcare.entities.Patient;
 import com.example.medcare.repository.AppointmentRepository;
 import com.example.medcare.repository.DoctorRepository;
 import com.example.medcare.repository.PatientRepository;
+import com.example.medcare.repository.UserRepository;
 import com.example.medcare.service.ScheduleAppointmentService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
@@ -22,6 +23,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -47,6 +52,9 @@ class ScheduleAppointmentServiceTest {
 
     @Mock
     private DoctorRepository doctorRepository;
+
+    @Mock
+    private     UserRepository userRepository;
 
 
     @InjectMocks
@@ -188,10 +196,6 @@ class ScheduleAppointmentServiceTest {
 
     @Test
     void testScheduleAppointmentWhenDTOIsNull() {
-        // Given
-        /**
-         * Nothing
-         */
 
         // When
         ResponseEntity<Object> response = scheduleAppointmentService.scheduleAppointment(null);
@@ -256,8 +260,82 @@ class ScheduleAppointmentServiceTest {
         executor.shutdown();
     }
 
+    @Test
+    public void testViewAppointmentsForNullUsername() {
+        ResponseEntity<Object> response = scheduleAppointmentService.viewAppointmentsForCertainPatient(null);
+        assertEquals(400, response.getStatusCodeValue());
+        assertTrue(((ResponseMessageDto) response.getBody()).getMessage().contains("Invalid Request"));
+    }
+
+    @Test
+    public void testViewAppointmentsForEmptyUsername() {
+        ResponseEntity<Object> response = scheduleAppointmentService.viewAppointmentsForCertainPatient("   ");
+        assertEquals(400, response.getStatusCodeValue());
+        assertTrue(((ResponseMessageDto) response.getBody()).getMessage().contains("Invalid Request"));
+    }
+    @Test
+    void whenUsernameIsNull_thenBadRequest() {
+        ResponseEntity<Object> response = scheduleAppointmentService.viewAppointmentsForCertainPatient(null);
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("Invalid Request: Username is null or empty.", ((ResponseMessageDto) response.getBody()).getMessage());
+    }
+
+    @Test
+    void whenUsernameIsEmpty_thenBadRequest() {
+        ResponseEntity<Object> response = scheduleAppointmentService.viewAppointmentsForCertainPatient("   ");
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("Invalid Request: Username is null or empty.", ((ResponseMessageDto) response.getBody()).getMessage());
+    }
+    @Test
+    void whenUserNotFound_thenRespondNotFound() {
+        when(userRepository.findByUsername("nonexistent")).thenReturn(Optional.empty());
+
+        ResponseEntity<Object> response = scheduleAppointmentService.viewAppointmentsForCertainPatient("nonexistent");
+        assertEquals(404, response.getStatusCodeValue());
+        assertEquals("Patient Not Found", ((ResponseMessageDto) response.getBody()).getMessage());
+    }
 
 
+
+
+
+    @Test
+    void whenNoAppointmentsFound_thenRespondNoAppointments() {
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(new Patient()));
+        when(appointmentRepository.findByPatient_Username("user")).thenReturn(new ArrayList<>());
+
+        ResponseEntity<Object> response = scheduleAppointmentService.viewAppointmentsForCertainPatient("user");
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("No Appointments Found", ((ResponseMessageDto) response.getBody()).getMessage());
+    }
+    @Test
+    void whenValidAppointmentsExist_thenReturnThem() {
+        Patient patient = new Patient();
+        patient.setUsername("user");
+        Doctor doctor = new Doctor();
+        doctor.setUsername("doc");
+
+        Appointment validAppointment = new Appointment();
+        validAppointment.setAppointmentId(1);
+        validAppointment.setPatient(patient);
+        validAppointment.setDoctor(doctor);
+        validAppointment.setAppointmentDateTime(LocalDateTime.now());
+        validAppointment.setConfirmed(true);
+        validAppointment.setCancelled(false);
+
+        Appointment cancelledAppointment = new Appointment();
+        cancelledAppointment.setCancelled(true);
+
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(patient));
+        when(appointmentRepository.findByPatient_Username("user")).thenReturn(Arrays.asList(validAppointment, cancelledAppointment));
+
+        ResponseEntity<Object> response = scheduleAppointmentService.viewAppointmentsForCertainPatient("user");
+        assertEquals(200, response.getStatusCodeValue());
+        List<AppointmentDTO> results = (List<AppointmentDTO>) ((ResponseMessageDto) response.getBody()).getData();
+        assertTrue(results.size() == 1); // Only one valid appointment
+        assertFalse(results.get(0).isCancelled());
+        assertEquals("Appointments for user", ((ResponseMessageDto) response.getBody()).getMessage());
+    }
 
 
 }
