@@ -23,7 +23,11 @@ public class MedCareApplication {
 
     @Bean
     public CommandLineRunner commandLineRunner(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-    
+        // Check if the superAdmin exists
+        if(userRepository.findByUsername("superAdmin").isPresent()) {
+            return args -> {};
+        }
+
         return args -> {
             // Build a supedAdmin
             User superAdmin = User.builder()
