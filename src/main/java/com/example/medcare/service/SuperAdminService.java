@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.medcare.dto.ClinicAdminDTO;
@@ -53,42 +55,43 @@ public class SuperAdminService {
             return doctorDTO;
         }).collect(Collectors.toList());
     }
-
+    
     // approving doctor application
-    public ResponseMessageDto approveDoctorApplication(String username) {
-        Optional<Doctor> doctor = doctorRepository.findByUsername(username);
+    public ResponseEntity<Object> approveDoctorApplication(DoctorDTO doctorDto) {
+
+        Optional<Doctor> doctor = doctorRepository.findByUsername(doctorDto.getUsername());
 
         if (doctor.isPresent()) {
             doctor.get().setVerified(true);
             doctorRepository.save(doctor.get());
 
-            return ResponseMessageDto.builder()
+            return ResponseEntity.ok().body(ResponseMessageDto.builder()
                     .message("Doctor application approved")
                     .success(true)
                     .statusCode(200)
-                    .build();
+                    .build());
         }
 
         else
-            return ResponseMessageDto.builder()
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseMessageDto.builder()
                     .message("Doctor not found")
                     .success(false)
                     .statusCode(404)
-                    .build();
+                    .build());
     }
 
     // super admin review pending clinic applications
     public List<ClinicDTO> getPendingClinics() throws NotFoundException {
 
-        if (clinicRepository.getPendingClinics().isEmpty())
-            throw new NotFoundException(); // throw exception if no pending clinics
-
-        // Assuming clinicRepository.getPendingClinics() returns a List<Clinic>
-        List<Clinic> clinics = clinicRepository.getPendingClinics();
-
+        List<Clinic> clinics = clinicRepository.findAllByIsVerifiedFalse();
+        if (clinics.isEmpty())
+            throw new NotFoundException();
+            
         return clinics.stream().map(clinic -> {
 
             ClinicDTO clinicDTO = ClinicDTO.builder()
+                    .clinicId(clinic.getClinicId())
                     .clinicName(clinic.getName())
                     .address(clinic.getAddress())
                     .permit(clinic.getPermit())
@@ -107,25 +110,26 @@ public class SuperAdminService {
     }
 
     // approving clinic application
-    public ResponseMessageDto approveClinicApplication(int clinicId) {
+    public ResponseEntity<Object> approveClinicApplication(int clinicId) {
         Optional<Clinic> clinic = clinicRepository.findById(clinicId);
 
         if (clinic.isPresent()) {
             clinic.get().setVerified(true);
             clinicRepository.save(clinic.get());
 
-            return ResponseMessageDto.builder()
+            return ResponseEntity.ok().body(ResponseMessageDto.builder()
                     .message("Clinic application approved")
                     .success(true)
                     .statusCode(200)
-                    .build();
+                    .build());
         }
 
         else
-            return ResponseMessageDto.builder()
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseMessageDto.builder()
                     .message("Clinic not found")
                     .success(false)
                     .statusCode(404)
-                    .build();
+                    .build());
     }
 }

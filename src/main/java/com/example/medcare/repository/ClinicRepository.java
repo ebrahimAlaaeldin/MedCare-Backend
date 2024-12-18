@@ -15,10 +15,9 @@ public interface ClinicRepository extends JpaRepository<Clinic, Integer> {
 
 
 
-    @Query(value = "SELECT * FROM clinic where is_verified = false",nativeQuery = true)
-    List<Clinic> getPendingClinics();
+    @Query(value = "SELECT * FROM clinic where is_verified = false", nativeQuery = true)
+    List<Clinic> findAllByIsVerifiedFalse();
 
-    List<Clinic> findAllByIsVerified(Boolean isVerified);
 
     Optional<Clinic> findById(int clinicId);
 

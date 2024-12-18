@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.medcare.Enums.Role;
 import com.example.medcare.dto.ClinicAdminDTO;
 import com.example.medcare.dto.ClinicDTO;
 import com.example.medcare.dto.ResponseMessageDto;
@@ -25,6 +27,8 @@ public class ClinicRegistrationService {
     private final ClinicRepository clinicRepository;
     private final ClinicAdminRepository clinicAdminRepository;
     private final SignUpService signUpService;
+    private final PasswordEncoder passwordEncoder;
+    
 
    
     public ResponseEntity<ResponseMessageDto> registerClinic(ClinicDTO request) {
@@ -60,56 +64,64 @@ public class ClinicRegistrationService {
     }
 
 
-    @Transactional
-    public ResponseEntity<ResponseMessageDto> registerClinicandAdminRegistration(ClinicDTO request) {
+   @Transactional
+public ResponseEntity<ResponseMessageDto> registerClinicandAdminRegistration(ClinicDTO request) {
+    try {
+        // Validate request
+        validateRequest(request);
+        
+        ClinicAdmin admin = ClinicAdmin.builder()
+                .username(request.getClinicAdmin().getUsername())
+                .password(passwordEncoder.encode(request.getClinicAdmin().getPassword()))
+                .email(request.getClinicAdmin().getEmail())
+                .phoneNumber(request.getClinicAdmin().getPhoneNumber())
+                .firstName(request.getClinicAdmin().getFirstName())
+                .lastName(request.getClinicAdmin().getLastName())
+                .role(Role.ADMIN)
+                .address(request.getClinicAdmin().getAddress())
+                .age(signUpService.calculateAge(request.getClinicAdmin().getDateOfBirth()))
+                .birthDate(request.getClinicAdmin().getDateOfBirth())
+                .createdAt(LocalDate.now())
+                .build();
 
-            // admin registration
-            if (request.getClinicAdmin() == null || request.getClinicAdmin().getUsername().isEmpty() ||
-                            request.getClinicAdmin().getPassword() == null
-                            || request.getClinicAdmin().getPassword().isEmpty() ||
-                            request.getClinicAdmin().getEmail() == null) {
-                    return ResponseEntity.badRequest().body(
-                                    ResponseMessageDto.builder()
-                                                    .message("Invalid Admin sign up request")
-                                                    .success(false)
-                                                    .statusCode(400)
-                                                    .build());
-            }
+        Clinic clinic = Clinic.builder()
+                .name(request.getClinicName())
+                .clinicAdmin(admin)
+                .address(request.getAddress())
+                .permit(request.getPermit())
+                .isVerified(false)
+                .isActive(false)
+                .createdAt(LocalDate.now())
+                .build();
 
-            ClinicAdminDTO admin = request.getClinicAdmin();
+        admin.setClinic(clinic);
+        clinicRepository.save(clinic);
 
-            signUpService.adminSignUp(admin);
+        return ResponseEntity.ok(ResponseMessageDto.builder()
+                .message("Clinic and Admin registered successfully")
+                .success(true)
+                .statusCode(200)
+                .build());
 
-            // Clinc registration
-            if (request.getPermit() == null || request.getClinicName() == null) {
-                    return ResponseEntity.badRequest().body(ResponseMessageDto.builder()
-                                    .message("Invalid clinic registration request")
-                                    .success(false)
-                                    .statusCode(400)
-                                    .build());
-            }
-
-            ClinicAdmin clinicAdmin = clinicAdminRepository.findByUsername(admin.getUsername()).get();
-            Clinic clinic = Clinic.builder()
-                            .name(request.getClinicName())
-                            .clinicAdmin(clinicAdmin)
-                            .address(request.getAddress())
-                            .permit(request.getPermit())
-                            .isVerified(false)
-                            .isActive(false)
-                            .createdAt(LocalDate.now())
-                            .isVerified(false)
-                            .build();
-
-            clinicRepository.save(clinic);
-
-            return ResponseEntity.ok(ResponseMessageDto.builder()
-                            .message("Clinic and Admin registered successfully")
-                            .success(true)
-                            .statusCode(200)
-                            .build());
-
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body(
+                ResponseMessageDto.builder()
+                        .message("Registration failed: " + e.getMessage())
+                        .success(false)
+                        .statusCode(400)
+                        .build());
     }
-    
+}
+
+private void validateRequest(ClinicDTO request) {
+    if (request.getClinicAdmin() == null 
+            || request.getClinicAdmin().getDateOfBirth() == null
+            || request.getClinicAdmin().getUsername() == null
+            || request.getClinicName() == null) {
+        throw new IllegalArgumentException("Missing required fields");
+    }
+}
+
+
 
 }

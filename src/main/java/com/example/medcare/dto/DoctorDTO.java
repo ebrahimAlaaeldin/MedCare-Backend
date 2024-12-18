@@ -5,6 +5,8 @@ import java.time.LocalDate;
 
 import com.example.medcare.Enums.Gender;
 import com.example.medcare.embedded.Address;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +20,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class DoctorDTO {
 
+    @JsonProperty("username")
     private String username;
     private String firstName;
     private String lastName;
@@ -25,6 +28,7 @@ public class DoctorDTO {
     private String email;
     private String phoneNumber;
     private Address address;
+
     private Integer age;
     private LocalDate dateOfBirth;  // Format example: 1999-12-31
 
