@@ -32,43 +32,15 @@ public class SuperAdminController {
 
     @GetMapping("/doctorApplications/pending")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public ResponseEntity<List<DoctorDTO>> getPendingApplications() {
-
-        List<DoctorDTO> pendingApplications = applicationsReviewService.returnPendingApplications();
-
-        if (pendingApplications.isEmpty()) 
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        else 
-            return new ResponseEntity<>(pendingApplications, HttpStatus.OK);
-
-        
+    public ResponseEntity<List<DoctorDTO>> getPendingDoctorApplications() {
+        return new ResponseEntity<>(applicationsReviewService.returnPendingApplications(), HttpStatus.OK);
     }
 
 
     // approve doctor application
     @PutMapping("/doctorApplications/approve/{username}")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public ResponseEntity<String> approveDoctorApplication(@PathVariable String username) {
-        applicationsReviewService.approveDoctorApplication(username);
-        return new ResponseEntity<>("Doctor application approved", HttpStatus.OK);
+    public ResponseEntity<?> approveDoctorApplication(@PathVariable String username) {
+        return new ResponseEntity<>(applicationsReviewService.approveDoctorApplication(username), HttpStatus.OK);
     }
-
-
-
-    
-
-    
-
-   
-
-
-
-
-
-
-    // Super Admin review Clinic applications
-
-
-
-    
 }

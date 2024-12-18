@@ -51,6 +51,7 @@ public class SuperAdminService {
 
     // approving doctor application
     public ResponseMessageDto approveDoctorApplication(String username) {
+
         Optional<Doctor> doctor = doctorRepository.findByUsername(username);
         
         if (doctor.isPresent()) {

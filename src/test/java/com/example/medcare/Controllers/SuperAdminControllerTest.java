@@ -74,17 +74,19 @@ class SuperAdminControllerTest {
 
         // Perform GET request
         mockMvc.perform(get("/api/v1/SuperAdmin/doctorApplications/pending"))
-                .andExpect(status().isNoContent()); // HTTP 204 when no pending applications
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("[]"));
     }
 
     @Test
     void testGetPendingApplications_Filled() throws Exception {
-        // Mock the service method to return a non-empty list
-        when(superAdminService.returnPendingApplications()).thenReturn(Arrays.asList(doctorDTO));
+        // Mock the service method to return a list of doctorDTOs
+        when(superAdminService.returnPendingApplications()).thenReturn(Collections.singletonList(doctorDTO));
 
         // Perform GET request
         mockMvc.perform(get("/api/v1/SuperAdmin/doctorApplications/pending"))
-                .andExpect(status().isOk()) // HTTP 200 if pending applications exist
+                .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].username").value("doctor1"))
                 .andExpect(jsonPath("$[0].firstName").value("John"))
@@ -93,18 +95,17 @@ class SuperAdminControllerTest {
 
     @Test
     void testApproveDoctorApplication_Success() throws Exception {
-        // Mock the service method to approve doctor
-        doNothing().when(superAdminService).approveDoctorApplication(anyString());
+        when(superAdminService.approveDoctorApplication("doctor1")).thenReturn(successResponse);
 
-        // Perform PUT request for approving a doctor
         mockMvc.perform(put("/api/v1/SuperAdmin/doctorApplications/approve/doctor1")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()) // HTTP 200 on success
-                .andExpect(content().string("Doctor application approved"));
+                .andExpect(jsonPath("$.message").value("Doctor application approved"))
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.statusCode").value(200));
     }
 
     
-   /*  @Test
+     @Test
     void testApproveDoctorApplication_NotFound() throws Exception {
         when(superAdminService.approveDoctorApplication("unknownDoctor")).thenReturn(notFoundResponse);
 
@@ -113,5 +114,5 @@ class SuperAdminControllerTest {
                 .andExpect(jsonPath("$.message").value("Doctor not found"))
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.statusCode").value(404));
-    } */
+    }
 }

@@ -1,9 +1,6 @@
 package com.example.medcare.Services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -117,15 +114,16 @@ public class SuperAdminServiceTest {
     @Test
     void testApproveDoctorApplication_DoctorNotFound() {
         // Mock the repository call to return an empty optional
-        when(doctorRepository.findByUsername(" ")).thenReturn(Optional.empty());
+        when(doctorRepository.findByUsername("john_doe")).thenReturn(Optional.empty());
 
-        // Call the method and verify that it throws a RuntimeException
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> 
-            superAdminService.approveDoctorApplication(" ")
-        );
+        // Call the method to approve
+        superAdminService.approveDoctorApplication("john_doe");
 
-        // Verify the exception message
-        assertEquals("Doctor not found", exception.getMessage());
+        // Verify that the doctor's `isVerified` flag was not set to true
+        assertFalse(doctor.getIsVerified());
+
+        // Verify that save was not called on the repository
+        verify(doctorRepository, never()).save(doctor);
 
     }
 }
