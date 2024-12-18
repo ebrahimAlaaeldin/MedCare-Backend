@@ -47,7 +47,8 @@ void setUp() {
     // Set up new appointment DTO
     newAppointmentDTO = new AppointmentDTO();
     newAppointmentDTO.setDoctorUsername("doctor");
-    newAppointmentDTO.setAppointmentTime("2025-12-17 12:00");
+    newAppointmentDTO.setAppointmentTime("12:00");
+    newAppointmentDTO.setAppointmentDate("2025-12-18");
     newAppointmentDTO.setAppointmentId(1);
 }
 
@@ -70,21 +71,24 @@ void setUp() {
    }
 
    @Test
-   void testRescheduleAppointment_TimeNotAvailable() {
+void testRescheduleAppointment_TimeNotAvailable() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-         // Mock repository behavior
-         when(appointmentRepository.findByAppointmentId(1)).thenReturn(existingAppointment);
-         when(appointmentRepository.existsByDoctorUsernameAndAppointmentDateTime("doctor", LocalDateTime.parse("2025-12-17 12:00",formatter))).thenReturn(true);
-    
-         // Call the service method
-         ResponseEntity<Object> response = rescheduleAppointementService.rescheduleAppointment(newAppointmentDTO);
-    
-         // Assertions
-         assertThat(response).isNotNull();
-         assertThat(response.getBody().toString()).contains("Appointment Time Not Available");
-         assertThat(response.getStatusCodeValue()).isEqualTo(409);
 
-   }
+    // Mock repository behavior with the correct date-time
+    when(appointmentRepository.findByAppointmentId(1)).thenReturn(existingAppointment);
+    when(appointmentRepository.existsByDoctorUsernameAndAppointmentDateTime(
+        "doctor", LocalDateTime.parse("2025-12-18 12:00", formatter))
+    ).thenReturn(true);
+
+    // Call the service method
+    ResponseEntity<Object> response = rescheduleAppointementService.rescheduleAppointment(newAppointmentDTO);
+
+    // Assertions
+    assertThat(response).isNotNull();
+    assertThat(response.getBody().toString()).contains("Appointment Time Not Available");
+    assertThat(response.getStatusCodeValue()).isEqualTo(409);
+}
+
 
    @Test
    void testRescheduleAppointment_AppointmentNotFound() {
