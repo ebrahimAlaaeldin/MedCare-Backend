@@ -32,7 +32,7 @@ public class RescheduleAppointementService {
 
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime appointmentDateTime = LocalDateTime.parse(newAppointmentTime.getAppointmentTime(), formatter);
+        LocalDateTime appointmentDateTime = LocalDateTime.parse(newAppointmentTime.getAppointmentDate()+" "+newAppointmentTime.getAppointmentTime(), formatter);
         boolean existsAnAppointment = appointmentRepository
                 .existsByDoctorUsernameAndAppointmentDateTime(appointment.getDoctor().getUsername(),appointmentDateTime );
                     if (!existsAnAppointment) {
@@ -44,9 +44,6 @@ public class RescheduleAppointementService {
                             .statusCode(200)
                             .build());
         }
-
-
-
         return ResponseEntity.status(409).body(ResponseMessageDto.builder()
                 .message("Appointment Time Not Available")
                 .success(false)

@@ -1,13 +1,13 @@
 package com.example.medcare.service;
 
 import com.example.medcare.dto.AppointmentDTO;
-import com.example.medcare.dto.CancelDTO;
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.entities.Appointment;
+import com.example.medcare.entities.User;
 import com.example.medcare.repository.AppointmentRepository;
 import com.example.medcare.repository.PatientRepository;
 import com.example.medcare.repository.DoctorRepository;
-import jakarta.transaction.Transactional;
+import com.example.medcare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +27,7 @@ public class ScheduleAppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
-
+    private final UserRepository  userRepository;
 
     public ResponseEntity<Object> scheduleAppointment(AppointmentDTO appointmentDTO){
         
@@ -110,5 +114,57 @@ public class ScheduleAppointmentService {
         .statusCode(200)
         .build());
 
+    }
+
+    public ResponseEntity<Object> viewAppointmentsForCertainPatient(String patientUsername) {
+        if (patientUsername == null || patientUsername.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(ResponseMessageDto.builder()
+                    .message("Invalid Request: Username is null or empty.")
+                    .success(false)
+                    .statusCode(400)
+                    .build());
+        }
+
+        Optional<User> user = userRepository.findByUsername(patientUsername);
+        if (!user.isPresent()) {
+            return ResponseEntity.status(404).body(ResponseMessageDto.builder()
+                    .message("Patient Not Found")
+                    .success(false)
+                    .statusCode(404)
+                    .build());
+        }
+
+        List<Appointment> appointments = appointmentRepository.findByPatient_Username(patientUsername);
+        List<AppointmentDTO> appointmentDTOs = new ArrayList<>();
+
+        for(Appointment appointment : appointments){
+            if (appointment.isCancelled()) {
+                continue;
+            }
+            appointmentDTOs.add(AppointmentDTO.builder()
+                    .appointmentId(appointment.getAppointmentId())
+                    .patientUsername(appointment.getPatient().getUsername())
+                    .doctorUsername(appointment.getDoctor().getUsername())
+                    .appointmentDate(appointment.getAppointmentDateTime().toLocalDate().toString())
+                    .appointmentTime(appointment.getAppointmentDateTime().toLocalTime().toString())
+                    .isConfirmed(appointment.isConfirmed())
+                    .isCancelled(appointment.isCancelled())
+                    .build());
+        }
+
+        if (appointments.isEmpty()) {
+            return ResponseEntity.ok(ResponseMessageDto.builder()
+                    .message("No Appointments Found")
+                    .success(true)
+                    .statusCode(200)
+                    .build());
+        }
+
+        return ResponseEntity.ok(ResponseMessageDto.builder()
+                .message("Appointments for " + patientUsername)
+                .success(true)
+                .statusCode(200)
+                .data(appointmentDTOs)
+                .build());
     }
 }
