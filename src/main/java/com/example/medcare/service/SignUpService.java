@@ -136,7 +136,7 @@ public class SignUpService {
     }
 
     // return a more user-friendly error message
-    public String extractConstraintMessage(String fullMessage) {
+    private String extractConstraintMessage(String fullMessage) {
         int startIndex = fullMessage.indexOf("Key (");
         int endIndex = fullMessage.indexOf("already exists");
         if (startIndex != -1 && endIndex != -1) {
