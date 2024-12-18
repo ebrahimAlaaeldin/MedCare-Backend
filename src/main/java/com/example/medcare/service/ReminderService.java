@@ -68,6 +68,7 @@ public class ReminderService {
                                 )
                                 .build();
                         emailService.sendHtmlMessage(mailBody);
+                        appointmentRepository.save(appointment);
                     }
 
                 } catch (Exception e) {
