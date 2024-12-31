@@ -1,7 +1,6 @@
 package com.example.medcare.config;
 import com.example.medcare.repository.TokenRepository;
 import com.nimbusds.jose.JWSObject;
-import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -87,6 +86,7 @@ public class JwtService {
         return claimsSet.getStringClaim("email");
     }
     public String generateToken(
+
             Map<String, Object> extraClaims,
             UserDetails userDetails
     ) {
@@ -94,10 +94,25 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
+    // Token for OTP validation
+    public String generateToken(
+            int OTP,
+            UserDetails userDetails
+    ){
+        return Jwts.builder()
+                .setSubject(userDetails.getUsername())
+                .claim("OTP", OTP)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60))// 1 minute
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);

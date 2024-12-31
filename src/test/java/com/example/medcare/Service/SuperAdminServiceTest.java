@@ -1,35 +1,38 @@
 package com.example.medcare.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import javax.print.Doc;
 
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.http.ResponseEntity;
 
+import com.example.medcare.dto.ClinicDTO;
 import com.example.medcare.dto.DoctorDTO;
+import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.embedded.Address;
+import com.example.medcare.embedded.ClinicPermit;
 import com.example.medcare.embedded.License;
 import com.example.medcare.entities.Clinic;
+import com.example.medcare.entities.ClinicAdmin;
 import com.example.medcare.entities.Doctor;
+import com.example.medcare.repository.ClinicRepository;
 import com.example.medcare.repository.DoctorRepository;
 import com.example.medcare.service.SuperAdminService;
 
@@ -38,10 +41,17 @@ public class SuperAdminServiceTest {
     @Mock
     private DoctorRepository doctorRepository;
 
+    @Mock  
+    private ClinicRepository clinicRepository;
+
     @InjectMocks
     private SuperAdminService superAdminService;
 
     private Doctor doctor;
+    private DoctorDTO doctorDTO;
+
+    private Clinic clinic;
+    private ClinicAdmin admin;
 
 
     @BeforeEach
@@ -62,12 +72,45 @@ public class SuperAdminServiceTest {
                             .country("Country")
                             .build()
                 )
-                .age(30)
                 .birthDate(LocalDate.of(1991, 5, 10))
                 .isVerified(false)
                 .license(new License("LIC123456", "General Medicine", LocalDate.of(2020, 1, 1)))
                 .build();
-        
+
+                 doctorDTO = DoctorDTO.builder()
+                        .username("john_doe")
+                        .firstName("John")
+                        .lastName("Doe")
+                        .email("john.doe@example.com")
+                        .phoneNumber("1234567890")
+                        .address(
+                                Address.builder()
+                                        .street("123 Street")
+                                        .city("City")
+                                        .country("Country")
+                                        .build())
+                        .Specialty("General Medicine")
+                        .licenseNumber("LIC123456")
+                        .issuingDate(LocalDate.of(2020, 1, 1))
+                         .build();
+                        
+            admin = ClinicAdmin.builder()
+            .username("admin")
+            .firstName("John")
+            .lastName("Doe")
+            .email("admin@clinic.com")
+            .phoneNumber("1234567890")
+            .address(new Address("Street", "City", "Country", "12345"))
+            .build();
+
+        clinic = Clinic.builder()
+            .clinicId(1)
+            .name("Test Clinic")
+            .clinicAdmin(admin)
+            .address(new Address("Street", "City", "Country", "12345"))
+            .permit(new ClinicPermit(123,LocalDate.now(), LocalDate.now()))
+            .isVerified(false)
+            .build();
         
     }
 
@@ -75,7 +118,7 @@ public class SuperAdminServiceTest {
     @Test
     void testReturnPendingApplications_WithPendingDoctors() {
 
-        when(doctorRepository.findAllByIsVerified(false)).thenReturn(Optional.of(doctor));
+        when(doctorRepository.findAllByIsVerified(false)).thenReturn(List.of(doctor));
 
         List<DoctorDTO> result = superAdminService.returnPendingApplications();
 
@@ -89,7 +132,7 @@ public class SuperAdminServiceTest {
     @Test
     void testReturnPendingApplications_NoPendingDoctors() {
         // Mock the repository call to return an empty list
-        when(doctorRepository.findAllByIsVerified(false)).thenReturn(Optional.empty());
+        when(doctorRepository.findAllByIsVerified(false)).thenReturn(List.of());
 
         List<DoctorDTO> result = superAdminService.returnPendingApplications();
 
@@ -101,17 +144,23 @@ public class SuperAdminServiceTest {
     // Test for approving a doctor application with an existing doctor
     @Test
     void testApproveDoctorApplication_Success() {
-        // Mock the repository call to return a doctor by username
-        when(doctorRepository.findByUsername("john_doe")).thenReturn(Optional.of(doctor));
-
-        // Call the method to approve
-        superAdminService.approveDoctorApplication("john_doe");
-
-        // Verify that the doctor's `isVerified` flag was set to true
-        assertTrue(doctor.getIsVerified());
-
-        // Verify that save was called on the repository
-        verify(doctorRepository, times(1)).save(doctor);
+    
+        // Mock repository behavior
+        when(doctorRepository.findByUsername(doctorDTO.getUsername()))
+            .thenReturn(Optional.of(doctor));
+        when(doctorRepository.save(any(Doctor.class)))
+            .thenReturn(doctor);
+    
+        // Execute test
+        ResponseEntity<Object> response = 
+            superAdminService.approveDoctorApplication(doctorDTO);
+    
+        // Verify
+        assertTrue(doctor.isVerified());
+        verify(doctorRepository).findByUsername(doctorDTO.getUsername());
+        verify(doctorRepository).save(doctor);
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals("Doctor application approved", ((ResponseMessageDto) response.getBody()).getMessage());
     }
 
     // Test for approving a doctor application with a non-existing doctor
@@ -121,13 +170,66 @@ public class SuperAdminServiceTest {
         when(doctorRepository.findByUsername(" ")).thenReturn(Optional.empty());
 
         // Call the method and verify that it throws a RuntimeException
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> 
-            superAdminService.approveDoctorApplication(" ")
-        );
+        ResponseEntity<Object> response = superAdminService.approveDoctorApplication(doctorDTO);
 
-        // Verify the exception message
-        assertEquals("Doctor not found", exception.getMessage());
+        // Verify the result
+        assertEquals(404, response.getStatusCode().value());
+        assertEquals("Doctor not found", ((ResponseMessageDto) response.getBody()).getMessage());
 
     }
+
+    
+     @Test
+    void getPendingClinics_Success() throws NotFoundException {
+        when(clinicRepository.findAllByIsVerifiedFalse())
+            .thenReturn(Arrays.asList(clinic));
+
+        List<ClinicDTO> result = superAdminService.getPendingClinics();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(clinic.getName(), result.get(0).getClinicName());
+        assertEquals(clinic.getClinicAdmin().getUsername(), 
+            result.get(0).getClinicAdmin().getUsername());
+    }
+
+   @Test
+   void getPendingClinics_EmptyList() {
+       when(clinicRepository.findAllByIsVerifiedFalse())
+               .thenReturn(List.of());
+
+       assertThrows(NotFoundException.class,
+               () -> superAdminService.getPendingClinics());
+   }
+    
+   @Test
+   void approveClinicApplication_Success() {
+       when(clinicRepository.findById(1))
+               .thenReturn(Optional.of(clinic));
+       when(clinicRepository.save(any(Clinic.class)))
+               .thenReturn(clinic);
+
+       ResponseEntity<Object> response = superAdminService.approveClinicApplication(1);
+
+       assertEquals(200, response.getStatusCode().value());
+       assertTrue(((ResponseMessageDto) response.getBody()).isSuccess());
+       assertTrue(clinic.isVerified());
+   }
+
+   @Test
+    void approveClinicApplication_NotFound() {
+        when(clinicRepository.findById(1))
+            .thenReturn(Optional.empty());
+
+        ResponseEntity<Object> response = 
+            superAdminService.approveClinicApplication(1);
+
+        assertEquals(404, response.getStatusCode().value());
+        assertFalse(((ResponseMessageDto)response.getBody()).isSuccess());
+    }
+
+   
+
+
 }
 
