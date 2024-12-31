@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import java.util.List;
 @EqualsAndHashCode(callSuper = true)
@@ -33,9 +31,8 @@ public class Doctor extends User {
     )
     private List<Clinic> clinics;
 
-    @Getter
-    @Setter
-    private Boolean isVerified;
+   
+    private boolean isVerified;
     
     
 

@@ -1,24 +1,29 @@
 package com.example.medcare.dto;
 
+import com.example.medcare.embedded.Address;
+import com.example.medcare.embedded.ClinicPermit;
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-// TODO: Add the necessary attributes to this class
+import lombok.NoArgsConstructor;
+
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
+
 public class ClinicDTO {
+
+    private int clinicId;
 
     private String clinicName;
 
-    private String address;
+     
+    private ClinicAdminDTO clinicAdmin;
 
-    private String city;
+    private Address address;
 
-    private String state;
-
-    private String country;
-
-
-    
-
-    
+    private ClinicPermit permit;
+   
 }

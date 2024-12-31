@@ -6,6 +6,7 @@ import com.example.medcare.dto.PatientDTO;
 import com.example.medcare.service.AuthenticateService;
 import com.example.medcare.service.SignUpService;
 import org.junit.jupiter.api.BeforeEach;
+import com.example.medcare.dto.ResponseMessageDto;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.http.MediaType;

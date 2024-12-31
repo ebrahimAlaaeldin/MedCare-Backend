@@ -5,7 +5,6 @@ import com.example.medcare.Authorization.AuthenticationResponse;
 import com.example.medcare.config.JwtService;
 import com.example.medcare.dto.AuthenticationRequest;
 
-
 import com.example.medcare.dto.ResponseMessageDto;
 import com.example.medcare.entities.User;
 import com.example.medcare.repository.UserRepository;
@@ -48,7 +47,7 @@ public class AuthenticateService {
                 throw new IllegalArgumentException("Invalid request");
             }
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username,request.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
 
             );
             Map<String, Object> claims = Map.of("role", user.getRole().toString(),
@@ -59,6 +58,7 @@ public class AuthenticateService {
             )
                     ;
             var token = jwtService.generateToken(claims, user);
+
             return ResponseEntity.ok().body(ResponseMessageDto.builder().message("User authenticated successfully").success(true).statusCode(200).data(token).build());
 
         }
@@ -95,4 +95,9 @@ public class AuthenticateService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseMessageDto.builder().message(e.getMessage()).success(false).statusCode(400).data(null).build());
         }
     }
+
+
+
+
+
 }

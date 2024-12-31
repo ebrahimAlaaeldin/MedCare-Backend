@@ -1,12 +1,11 @@
 package com.example.medcare;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.medcare.embedded.Address;
@@ -14,8 +13,8 @@ import com.example.medcare.entities.User;
 import com.example.medcare.Enums.Role;
 import com.example.medcare.repository.UserRepository;
 
-
 @SpringBootApplication
+@EnableScheduling
 public class MedCareApplication {
 
     public static void main(String[] args) {
@@ -24,7 +23,12 @@ public class MedCareApplication {
 
     @Bean
     public CommandLineRunner commandLineRunner(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        
+
+        // Check if the superAdmin exists
+        if(userRepository.findByUsername("superAdmin").isPresent()) {
+            return args -> {};
+        }
+
         return args -> {
             // Build a supedAdmin
             User superAdmin = User.builder()
@@ -44,10 +48,7 @@ public class MedCareApplication {
             .country("Country")
             .build())
             .build();
-                            
             userRepository.save(superAdmin);
-
         };
-
     }
 }
