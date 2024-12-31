@@ -19,17 +19,11 @@ public class Doctor extends User {
     @Embedded
     private License license;
 
-    @ManyToMany
-    @JoinTable(
-            name = "doctor_clinic",
-            joinColumns = {
-                    @JoinColumn(name = "doctor_id")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "clinic_id")
-            }
-    )
-    private List<Clinic> clinics;
+
+
+    @OneToMany(mappedBy = "doctorId")
+    private List<DoctorClinic> doctorClinics;
+
 
    
     private boolean isVerified;

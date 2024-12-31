@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
@@ -22,4 +23,10 @@ public interface ClinicRepository extends JpaRepository<Clinic, Integer> {
     Optional<Clinic> findById(int clinicId);
 
 
+
+    @Query("SELECT c.clinicId FROM Clinic c WHERE c.clinicAdmin.username = :username")
+    Integer findClinicByClinicAdminUsername(@Param("username") String username);
+
+
+    Optional<Clinic> findByName(String name);
 }

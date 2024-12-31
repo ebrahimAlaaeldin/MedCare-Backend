@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,6 +22,7 @@ public class Clinic {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer clinicId;
 
+    @Column(unique = true)
     private String name;
 
     @Embedded
@@ -35,7 +38,12 @@ public class Clinic {
 
     private LocalDate createdAt;
 
+    @OneToMany(mappedBy = "clinicId")
+    private List<DoctorClinic> doctorClinics;
+
+
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "clinicAdminId")
     private ClinicAdmin clinicAdmin;
+
 }
