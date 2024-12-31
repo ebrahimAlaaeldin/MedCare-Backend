@@ -48,26 +48,23 @@ public class ScheduleAppointmentService {
                     .statusCode(409)
                     .build());
         }
-
-        Appointment appointment = new Appointment();
-
-
-
-        //save appointment
-        appointment.setPatient(patient);
-        appointment.setDoctor(doctor);
-        appointment.setAppointmentDateTime(appointmentDateTime);
-        appointment.setCancelled(false);
-        appointment.setConfirmed(false);
+        Appointment appointment = Appointment.builder()
+                .patient(patient)
+                .doctor(doctor)
+                .isCancelled(false)
+                .isConfirmed(false)
+                .createdAt(LocalDateTime.now())
+                .appointmentDateTime(appointmentDateTime)
+                .build();
 
         //save to database
         appointmentRepository.save(appointment);
-
         return ResponseEntity.ok().body(ResponseMessageDto.builder()
                 .message("Appointment Scheduled Successfully")
                 .success(true)
                 .statusCode(200)
                 .build());
+
     }
     public ResponseEntity<Object> scheduleAppointment(AppointmentDTO appointmentDTO){
 
