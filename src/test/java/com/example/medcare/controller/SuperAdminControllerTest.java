@@ -1,4 +1,4 @@
-package com.example.medcare.Controllers;
+package com.example.medcare.controller;
 
 import com.example.medcare.controller.SuperAdminController;
 import com.example.medcare.dto.ClinicAdminDTO;
