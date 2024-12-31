@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,4 +40,8 @@ public class Clinic {
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "clinicAdminId")
     private ClinicAdmin clinicAdmin;
+
+    @ManyToMany(mappedBy = "clinics", fetch = FetchType.EAGER)
+    private List<Doctor> doctors;
+
 }

@@ -19,7 +19,7 @@ public class Doctor extends User {
     @Embedded
     private License license;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "doctor_clinic",
             joinColumns = {
