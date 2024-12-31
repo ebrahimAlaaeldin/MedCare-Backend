@@ -296,9 +296,6 @@ class ScheduleAppointmentServiceTest {
     }
 
 
-
-
-
     @Test
     void whenNoAppointmentsFound_thenRespondNoAppointments() {
         when(userRepository.findByUsername("user")).thenReturn(Optional.of(new Patient()));

@@ -1,12 +1,10 @@
 package com.example.medcare.entities;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 import java.time.LocalDateTime;
 
@@ -14,13 +12,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "Appointment")
+@Table(
+        name = "Appointment",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"doctor_username", "appointmentDateTime"}
+        )
+)
 public class Appointment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer appointmentId;
-
 
     @ManyToOne
     @JoinColumn(name = "patient_username", referencedColumnName = "username", nullable = false)
@@ -29,11 +31,12 @@ public class Appointment {
     @ManyToOne
     @JoinColumn(name = "doctor_username", referencedColumnName = "username", nullable = false)
     private Doctor doctor;
+
     @Column
     private boolean reminded;
 
     @Column(nullable = false)
-    //format "yyyy-MM-dd HH:mm"
+    // Format "yyyy-MM-dd HH:mm"
     private LocalDateTime appointmentDateTime;
 
     private boolean isConfirmed;
@@ -42,7 +45,7 @@ public class Appointment {
 
     private LocalDateTime createdAt;
 
-    public Appointment(){
+    public Appointment() {
         this.createdAt = LocalDateTime.now();
     }
 

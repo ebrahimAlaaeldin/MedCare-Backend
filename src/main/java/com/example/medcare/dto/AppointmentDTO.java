@@ -18,5 +18,4 @@ public class AppointmentDTO {
     private String appointmentTime;
     private boolean isConfirmed;
     private boolean isCancelled;
-
 }

@@ -65,7 +65,7 @@ public class ClinicRegistrationService {
 
 
    @Transactional
-public ResponseEntity<ResponseMessageDto> registerClinicandAdminRegistration(ClinicDTO request) {
+public synchronized ResponseEntity<ResponseMessageDto> registerClinicandAdminRegistration(ClinicDTO request) {
     try {
         // Validate request
         validateRequest(request);
