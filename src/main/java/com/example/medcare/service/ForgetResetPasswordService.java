@@ -7,6 +7,7 @@ import com.example.medcare.entities.User;
 import com.example.medcare.repository.ForgotPasswordRepository;
 import com.example.medcare.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,18 +46,21 @@ public class ForgetResetPasswordService {
                 // Update the user's password
                 user.setPassword(passwordEncoder.encode(input.getNewPassword()));
                 userRepository.save(user);
-                return ResponseEntity.ok().body(ResponseDTO.builder()
+
+                return ResponseEntity.ok().body(ResponseMessageDto.builder()
                         .message("Password reset successfully")
+                        .success(true)
                         .statusCode(200)
                         .data(null)
                         .build());
             }
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(ResponseDTO.builder()
-                    .message("Failed to reset password")
+            return ResponseEntity.badRequest().body(ResponseMessageDto.builder()
+                    .message(e.getMessage())
+                    .success(false)
                     .statusCode(400)
-                    .data(e.getMessage())
+                    .data(null)
                     .build());
         }
 
@@ -90,12 +94,6 @@ public class ForgetResetPasswordService {
                                     "<p>Best regards,<br>The MedCare Team</p>"
                     )
                     .build();
-//            Optional<ForgotPassword> existingForgotPassword = forgotPasswordRepository.findByUser(user);
-//
-//            if (existingForgotPassword.isPresent()) {
-//                // If a forgot password entry exists, delete it to prevent multiple OTPs being generated
-//                forgotPasswordRepository.delete(existingForgotPassword.get());
-//            }
 
             // Create a new ForgotPassword object with a unique OTP and an expiration time of 10 minutes
             ForgotPassword fp = ForgotPassword.builder()
@@ -108,17 +106,19 @@ public class ForgetResetPasswordService {
             emailService.sendHtmlMessage(mailBody);
             forgotPasswordRepository.save(fp);
 
-            return ResponseEntity.ok().body(ResponseDTO.builder()
-                    .message("OTP sent to email: "+user.getEmail())
+            return ResponseEntity.ok().body(ResponseMessageDto.builder()
+                    .message("OTP sent successfully to "+ user.getEmail())
+                    .success(true)
                     .statusCode(200)
                     .data(null)
                     .build());
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(ResponseDTO.builder()
-                    .message("Failed to send OTP")
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseMessageDto.builder()
+                    .message(e.getMessage())
+                    .success(false)
                     .statusCode(400)
-                    .data(e.getMessage())
+                    .data(null)
                     .build());
         }
     }
@@ -147,24 +147,21 @@ public class ForgetResetPasswordService {
                 forgotPasswordRepository.delete(fp);
                 throw new RuntimeException("OTP has expired");
             }
-            Map<String, Object> claims = Map.of("role", user.getRole().toString(),
-                    "firstName", user.getFirstName(),
-                    "lastName", user.getLastName(),
-                    "email", user.getEmail(),
-                    "username", user.getUsername()
-            );
             String jwtToken=jwtService.generateToken(otp,user);
             forgotPasswordRepository.delete(fp);
-            return ResponseEntity.ok().body(ResponseDTO.builder()
+
+            return ResponseEntity.ok().body(ResponseMessageDto.builder()
                     .message("OTP validated successfully")
+                    .success(true)
                     .statusCode(200)
                     .data(jwtToken)
                     .build());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(ResponseDTO.builder()
-                    .message("Failed to validate OTP")
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseMessageDto.builder()
+                    .message(e.getMessage())
+                    .success(false)
                     .statusCode(400)
-                    .data(e.getMessage())
+                    .data(null)
                     .build());
         }
 
@@ -196,16 +193,20 @@ public class ForgetResetPasswordService {
             );
 
             String jwtToken = jwtService.generateToken(claims,user);
-            return ResponseEntity.ok().body(ResponseDTO.builder()
+
+            return ResponseEntity.ok().body(ResponseMessageDto.builder()
                     .message("Password changed successfully")
+                    .success(true)
                     .statusCode(200)
                     .data(jwtToken)
                     .build());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(ResponseDTO.builder()
-                    .message("Failed to change password")
+
+            return ResponseEntity.badRequest().body(ResponseMessageDto.builder()
+                    .message(e.getMessage())
+                    .success(false)
                     .statusCode(400)
-                    .data(e.getMessage())
+                    .data(null)
                     .build());
         }
     }

@@ -2,6 +2,7 @@ package com.example.medcare.controller;
 
 import com.example.medcare.Authorization.AuthenticationResponse;
 import com.example.medcare.dto.AuthenticationRequest;
+import com.example.medcare.dto.ClinicAdminDTO;
 import com.example.medcare.dto.DoctorDTO;
 import com.example.medcare.dto.PatientDTO;
 
@@ -56,6 +57,12 @@ RegistrationController {
         return authenticateService.refreshToken(token.getRefreshToken());
     }
 
+
+
+    @PostMapping("/register/admin")
+    public ResponseEntity<Object> registerAdmin(@RequestBody ClinicAdminDTO request) {
+        return signUpService.adminSignUp(request);
+    }
 
 
 

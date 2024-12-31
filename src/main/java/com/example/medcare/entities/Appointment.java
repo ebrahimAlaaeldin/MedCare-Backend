@@ -21,18 +21,20 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer appointmentId;
 
-    
+
     @ManyToOne
-    @JoinColumn(name = "patient_id", nullable = false)
+    @JoinColumn(name = "patient_username", referencedColumnName = "username", nullable = false)
     private Patient patient;
 
     @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
+    @JoinColumn(name = "doctor_username", referencedColumnName = "username", nullable = false)
     private Doctor doctor;
+    @Column
+    private boolean reminded;
 
     @Column(nullable = false)
-    //date format is "yyyy-MM-DD HH:mm"
-    private String appointmentTime;
+    //format "yyyy-MM-dd HH:mm"
+    private LocalDateTime appointmentDateTime;
 
     private boolean isConfirmed;
 
@@ -44,4 +46,7 @@ public class Appointment {
         this.createdAt = LocalDateTime.now();
     }
 
+    public String getAppointmentTime() {
+        return appointmentDateTime.toString().replace("T", " ");
+    }
 }

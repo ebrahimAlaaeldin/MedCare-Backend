@@ -1,5 +1,11 @@
 package com.example.medcare.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Formatter;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +31,12 @@ public class RescheduleAppointementService {
         }
 
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime appointmentDateTime = LocalDateTime.parse(newAppointmentTime.getAppointmentDate()+" "+newAppointmentTime.getAppointmentTime(), formatter);
         boolean existsAnAppointment = appointmentRepository
-                .existsByDoctorIdAndAppointmentTime(appointment.getDoctor().getId(), newAppointmentTime.getAppointmentTime());
-                if (!existsAnAppointment) {
-                    appointment.setAppointmentTime(newAppointmentTime.getAppointmentTime());
+                .existsByDoctorUsernameAndAppointmentDateTime(appointment.getDoctor().getUsername(),appointmentDateTime );
+                    if (!existsAnAppointment) {
+                    appointment.setAppointmentDateTime(appointmentDateTime);
                     appointmentRepository.save(appointment);
                     return ResponseEntity.ok(ResponseMessageDto.builder()
                             .message("Appointment Rescheduled Successfully")
@@ -36,9 +44,6 @@ public class RescheduleAppointementService {
                             .statusCode(200)
                             .build());
         }
-
-
-
         return ResponseEntity.status(409).body(ResponseMessageDto.builder()
                 .message("Appointment Time Not Available")
                 .success(false)

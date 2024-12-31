@@ -1,10 +1,8 @@
 package com.example.medcare.dto;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import com.example.medcare.entities.Appointment;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,11 +10,11 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-
 public class AppointmentDTO {
     private Integer appointmentId;
-    private Integer patientId;
-    private Integer doctorId;
+    private String patientUsername;
+    private String doctorUsername;
+    private String appointmentDate;
     private String appointmentTime;
     private boolean isConfirmed;
     private boolean isCancelled;
