@@ -54,4 +54,8 @@ public class Appointment {
     public String getAppointmentTime() {
         return appointmentDateTime.toString().replace("T", " ");
     }
+
+    public void setId(int appointmentId2) {
+        appointmentId = appointmentId2;
+    }
 }
