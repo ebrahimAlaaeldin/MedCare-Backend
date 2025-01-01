@@ -14,7 +14,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "Appointment")
+@Table(
+        name = "Appointment",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"doctor_username", "appointmentDateTime"}
+        )
+)
 public class Appointment {
 
     @Id
@@ -48,5 +53,9 @@ public class Appointment {
 
     public String getAppointmentTime() {
         return appointmentDateTime.toString().replace("T", " ");
+    }
+
+    public void setId(int appointmentId2) {
+        appointmentId = appointmentId2;
     }
 }
