@@ -20,19 +20,10 @@ public interface ClinicRepository extends JpaRepository<Clinic, Integer> {
 
     Optional<Clinic> findByClinicAdminId(int clinicId);
 
-
     Optional<Clinic> findById(int clinicId);
 
     @Query("SELECT d FROM Clinic c JOIN c.doctors d WHERE c.id = :clinicId")
     List<Doctor> findAllDoctorsByClinicId(@Param("clinicId") int clinicId);
-
-
-
-
-
-
-
-
 
 
 
