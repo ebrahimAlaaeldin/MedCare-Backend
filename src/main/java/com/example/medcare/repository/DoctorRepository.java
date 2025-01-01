@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -15,6 +17,19 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
 
     Optional<Doctor> findByUsername(String username);
 
-    List<Doctor> findBySpecializationAndClinicId(String specialization, int clinicId);
-    
+    @Query("""
+    SELECT d
+    FROM Doctor d
+    JOIN d.clinics c
+    WHERE d.license.specialty = :specialization
+    AND c.clinicId = :clinicId
+""")
+    List<Doctor> findDoctorsBySpecializationAndClinicId(
+            @Param("specialization") String specialization,
+            @Param("clinicId") int clinicId
+    );
+
+
+
+
 }

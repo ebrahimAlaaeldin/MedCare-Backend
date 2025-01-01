@@ -22,7 +22,7 @@ public class SearchAndFilterService {
     }
 
     public ResponseEntity<Object> searchDoctor(SearchDTO searchDTO) {
-        List<Doctor> doctors = doctorRepository.findBySpecializationAndClinicId(searchDTO.getSpeciality(), searchDTO.getClinicId());
+        List<Doctor> doctors = doctorRepository.findDoctorsBySpecializationAndClinicId(searchDTO.getSpeciality(), searchDTO.getClinicId());
         return ResponseEntity.ok(doctors);
     }
 }
