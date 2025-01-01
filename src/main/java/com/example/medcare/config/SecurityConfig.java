@@ -45,6 +45,10 @@ public class SecurityConfig {
 
                         .requestMatchers("/clinic/**").permitAll()
 
+                        .requestMatchers("/api/search/**") // list of request that should be permitted
+                        .permitAll()
+
+
                         .requestMatchers("/api/clinic/**") 
                         .permitAll()            
                         

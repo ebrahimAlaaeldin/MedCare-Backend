@@ -76,6 +76,7 @@ class SearchAndFilterServiceTest {
                 new Doctor(1L, "Dr. John Doe", "Cardiology", new Clinic(1, "Health Clinic")),
                 new Doctor(2L, "Dr. Jane Smith", "Cardiology", new Clinic(1, "Health Clinic"))
         );
+
         when(doctorRepository.findDoctorsBySpecializationAndClinicId(searchDTO.getSpeciality(), searchDTO.getClinicId())).thenReturn(mockDoctors);
 
         // Act
@@ -84,14 +85,18 @@ class SearchAndFilterServiceTest {
         // Assert
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(mockDoctors, response.getBody());
+
         verify(doctorRepository, times(1)).findDoctorsBySpecializationAndClinicId(searchDTO.getSpeciality(), searchDTO.getClinicId());
+
     }
 
     @Test
     void testSearchDoctorWithNoResults() {
         // Arrange
         SearchDTO searchDTO = new SearchDTO("Dermatology", 2);
+
         when(doctorRepository.findDoctorsBySpecializationAndClinicId(searchDTO.getSpeciality(), searchDTO.getClinicId())).thenReturn(Collections.emptyList());
+
 
         // Act
         ResponseEntity<Object> response = searchAndFilterService.searchDoctor(searchDTO);
@@ -99,6 +104,8 @@ class SearchAndFilterServiceTest {
         // Assert
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(Collections.emptyList(), response.getBody());
+
         verify(doctorRepository, times(1)).findDoctorsBySpecializationAndClinicId(searchDTO.getSpeciality(), searchDTO.getClinicId());
+
     }
 }
