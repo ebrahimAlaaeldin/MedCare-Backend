@@ -18,6 +18,7 @@ public interface ClinicRepository extends JpaRepository<Clinic, Integer> {
     @Query(value = "SELECT * FROM clinic where is_verified = false", nativeQuery = true)
     List<Clinic> findAllByIsVerifiedFalse();
 
+
     Optional<Clinic> findByClinicAdminId(int clinicId);
 
     Optional<Clinic> findById(int clinicId);
@@ -30,7 +31,10 @@ public interface ClinicRepository extends JpaRepository<Clinic, Integer> {
 
 
 
+
     Optional<Clinic> findByName(String name);
 
-    List<Doctor> findAllDoctorsByClinicId(Integer clinicId);
+    @Query("SELECT d FROM Clinic c JOIN c.doctors d WHERE c.id = :clinicId")
+    List<Doctor> findAllDoctorsByClinicId(@Param("clinicId") int clinicId);
 }
+
