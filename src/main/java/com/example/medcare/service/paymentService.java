@@ -31,7 +31,6 @@ public class paymentService {
         payment.setPaymentMethod(paymentMethod);
         payment.setAmount(amount);
         payment.setStatus(Payment.PaymentStatus.PAID);
-        System.out.println(payment); 
         paymentRepository.save(payment);  
         return ResponseEntity.ok().body(ResponseMessageDto.builder()
         .message("Payment Successful")
