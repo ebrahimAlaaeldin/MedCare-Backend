@@ -54,7 +54,8 @@ public class AuthenticateService {
                     "firstName", user.getFirstName(),
                     "lastName", user.getLastName(),
                     "email", user.getEmail(),
-                    "username", user.getUsername()
+                    "username", user.getUsername(),
+                    "userId", user.getId()
             )
                     ;
             var token = jwtService.generateToken(claims, user);

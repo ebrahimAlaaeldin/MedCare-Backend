@@ -28,7 +28,7 @@ public class AppointmentController {
     @PostMapping("/schedule")
     public ResponseEntity<Object> scheduleAppointment(
             @RequestBody AppointmentDTO requestForAppointment) {
-
+                
         return scheduleAppointmentService.scheduleAppointment(requestForAppointment);       }
   
     @PostMapping("/cancel")

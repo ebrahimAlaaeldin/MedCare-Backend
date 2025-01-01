@@ -11,5 +11,8 @@ import org.springframework.stereotype.Repository;
 public interface ClinicAdminRepository extends JpaRepository<ClinicAdmin, Integer> {
 
     Optional<ClinicAdmin> findByUsername(String username);
+
+
+    Integer findIdByUsername(String username);
     
 }
