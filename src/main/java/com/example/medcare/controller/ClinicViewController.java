@@ -17,7 +17,6 @@ public class ClinicViewController {
 
     private final ClinicService clinicService;
 
-    private final ClinicAdminService clinicAdminService;
 
     // get all clinics
     @GetMapping("/view")
@@ -25,11 +24,6 @@ public class ClinicViewController {
         return clinicService.getAllClinics();
     }
 
-    // get doctors in a clinic
-//    @GetMapping("/doctors/{adminId}")
-//    public ResponseEntity<Object> getDoctorsInClinic(@PathVariable Integer adminId) {
-//        return clinicAdminService.getAllDoctorsInClinic(adminId);
-//    }
 
     @GetMapping("/doctors/{clinicId}")
     public ResponseEntity<Object> getDoctorsInClinic(@PathVariable Integer clinicId) {

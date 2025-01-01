@@ -1,6 +1,5 @@
 package com.example.medcare.service;
 
-
 import com.example.medcare.Mappers.ClinicMapper;
 import com.example.medcare.Mappers.DoctorMapper;
 import com.example.medcare.dto.ClinicAdminDTO;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ClinicService {
-
 
     private final ClinicRepository clinicRepository;
     private final ClinicMapper clinicMapper;
