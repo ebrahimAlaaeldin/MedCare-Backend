@@ -52,7 +52,4 @@ public class Clinic {
     }    @ManyToMany(mappedBy = "clinics", fetch = FetchType.EAGER)
     private List<Doctor> doctors;
 
-    public Clinic(int i, String healthClinic) {
-
-    }
 }

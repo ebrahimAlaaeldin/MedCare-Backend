@@ -23,14 +23,6 @@ public interface ClinicRepository extends JpaRepository<Clinic, Integer> {
     Optional<Clinic> findById(int clinicId);
 
 
-    List<Clinic> findByNameContainingIgnoreCase(String name);
-
-
-    @Query("SELECT d FROM Clinic c JOIN c.doctors d WHERE c.id = :clinicId")
-    List<Doctor> findAllDoctorsByClinicId(@Param("clinicId") int clinicId);
-
-
-
     @Query("SELECT c.clinicId FROM Clinic c WHERE c.clinicAdmin.username = :username")
     Integer findClinicByClinicAdminUsername(@Param("username") String username);
 
@@ -39,4 +31,6 @@ public interface ClinicRepository extends JpaRepository<Clinic, Integer> {
 
 
     Optional<Clinic> findByName(String name);
+
+    List<Doctor> findAllDoctorsByClinicId(Integer clinicId);
 }
