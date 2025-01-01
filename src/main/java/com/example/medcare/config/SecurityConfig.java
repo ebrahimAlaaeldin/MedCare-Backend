@@ -36,7 +36,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // list of request that should be permitted
 
-                                        
+                        .requestMatchers("/clinic/**").permitAll()
                         .requestMatchers("/api/clinic/**") 
                         .permitAll()            
                         

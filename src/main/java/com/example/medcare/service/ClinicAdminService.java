@@ -79,11 +79,4 @@ public class ClinicAdminService {
         return new ResponseEntity<>(doctorDTOs, HttpStatus.OK);
 
     }
-
-
-    // Clinic admin can view all the appointments in his clinic
-    public ResponseEntity<List<DoctorDTO> >getAllAppointmentsInClinic(Integer clinicId) {
-        return  null;
-    }
-
 }
