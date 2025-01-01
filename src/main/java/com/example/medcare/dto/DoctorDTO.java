@@ -20,6 +20,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class DoctorDTO {
 
+    private Integer doctorId;
     @JsonProperty("username")
     private String username;
     private String firstName;

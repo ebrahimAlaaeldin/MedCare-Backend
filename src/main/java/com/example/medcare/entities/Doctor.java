@@ -21,9 +21,22 @@ public class Doctor extends User {
 
 
 
+
     @OneToMany(mappedBy = "doctorId")
     private List<DoctorClinic> doctorClinics;
 
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "doctor_clinic",
+            joinColumns = {
+                    @JoinColumn(name = "doctor_id")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "clinic_id")
+            }
+    )
+    private List<Clinic> clinics;
 
    
     private boolean isVerified;

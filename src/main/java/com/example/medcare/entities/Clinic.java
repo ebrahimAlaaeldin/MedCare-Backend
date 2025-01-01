@@ -46,4 +46,8 @@ public class Clinic {
     @JoinColumn(name = "clinicAdminId")
     private ClinicAdmin clinicAdmin;
 
+    @ManyToMany(mappedBy = "clinics", fetch = FetchType.EAGER)
+    private List<Doctor> doctors;
+
+
 }
