@@ -13,6 +13,6 @@ import java.time.LocalDate;
 public class License {
 
     private String licenseNumber;
-    private String Specialty;
+    private String specialty;
     private LocalDate issuingDate;
 }

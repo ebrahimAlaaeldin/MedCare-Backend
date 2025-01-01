@@ -36,6 +36,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/appointment/**") // list of request that should be permitted
                         .hasRole("PATIENT")
 
+                        .requestMatchers("/api/search/**") // list of request that should be permitted
+                        .permitAll()
+
+                                        
+
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // list of request that should be permitted
 
                         .requestMatchers("/clinic/**").permitAll()

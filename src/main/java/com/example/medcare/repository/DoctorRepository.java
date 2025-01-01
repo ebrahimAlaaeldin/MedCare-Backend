@@ -5,7 +5,6 @@ import com.example.medcare.entities.Doctor;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +14,21 @@ import org.springframework.stereotype.Repository;
 public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
 
     List<Doctor> findAllByIsVerified(Boolean isVerified);
+
+
+   // Optional<Doctor> findByUsername(String username);
+
+    @Query("""
+    SELECT d
+    FROM Doctor d
+    JOIN d.clinics c
+    WHERE d.license.specialty = :specialization
+    AND c.clinicId = :clinicId
+""")
+    List<Doctor> findDoctorsBySpecializationAndClinicId(
+            @Param("specialization") String specialization,
+            @Param("clinicId") int clinicId
+    );
 
 
 
