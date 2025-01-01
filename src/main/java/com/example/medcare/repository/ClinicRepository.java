@@ -21,5 +21,7 @@ public interface ClinicRepository extends JpaRepository<Clinic, Integer> {
 
     Optional<Clinic> findById(int clinicId);
 
+    List<Clinic> findByNameContainingIgnoreCase(String name);
+
 
 }

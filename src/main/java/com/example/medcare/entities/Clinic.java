@@ -38,4 +38,8 @@ public class Clinic {
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "clinicAdminId")
     private ClinicAdmin clinicAdmin;
+
+    public Clinic(int i, String healthClinic) {
+
+    }
 }
