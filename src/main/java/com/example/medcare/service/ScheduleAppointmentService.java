@@ -35,7 +35,6 @@ public class ScheduleAppointmentService {
     private final DoctorRepository doctorRepository;
     private final UserRepository  userRepository;
 
-//    @Transactional(isolation = Isolation.SERIALIZABLE)
     protected ResponseEntity<Object> reserve(Patient patient, Doctor doctor, LocalDateTime appointmentDateTime){
         //check if appointment time is available
         boolean existsAnAppointment = appointmentRepository.existsByDoctorUsernameAndAppointmentDateTime(
