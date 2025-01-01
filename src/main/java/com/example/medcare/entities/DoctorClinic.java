@@ -8,7 +8,7 @@ import lombok.*;
 
 import java.time.LocalTime;
 
-@Table(name = "doctor_clinic")
+@Table(name = "doctor_clinic_schedule")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
