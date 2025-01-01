@@ -14,8 +14,8 @@ public class SearchAndFilterController {
     private final SearchAndFilterService searchAndFilterService;
 
     @PostMapping("/clinic")
-    public ResponseEntity<Object> searchClinic(@RequestParam String name) {
-        return searchAndFilterService.searchClinic(name);
+    public ResponseEntity<Object> searchClinic(@RequestParam String clinicName) {
+        return searchAndFilterService.searchClinic(clinicName);
     }
     @PostMapping("/doctor")
     public ResponseEntity<Object> searchDoctor(@RequestBody SearchDTO searchDTO) {

@@ -16,8 +16,8 @@ import java.util.List;
 public class SearchAndFilterService {
     private final ClinicRepository clinicRepository;
     private final DoctorRepository doctorRepository;
-    public ResponseEntity<Object> searchClinic(String name) {
-        List<Clinic> clinics = clinicRepository.findByNameContainingIgnoreCase(name);
+    public ResponseEntity<Object> searchClinic(String clinicName) {
+        List<Clinic> clinics = clinicRepository.findByNameContainingIgnoreCase(clinicName);
         return ResponseEntity.ok(clinics);
     }
 
