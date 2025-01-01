@@ -20,7 +20,7 @@ public interface DoctorClinicsRepository extends JpaRepository<DoctorClinic, Int
 
 
     @Modifying
-    @Query(value = "INSERT INTO doctor_clinic (doctor_id, clinic_id, week_day, start_time, end_time) " +
+    @Query(value = "INSERT INTO doctor_clinic_schedule (doctor_id, clinic_id, week_day, start_time, end_time) " +
             "VALUES (:doctorId, :clinicId, :weekDay, :startTime, :endTime)", nativeQuery = true)
     void assignDoctorSchedule(
             @Param("doctorId") int doctorId,
