@@ -35,4 +35,10 @@ public interface ClinicRepository extends JpaRepository<Clinic, Integer> {
 
 
 
+
+    @Query("SELECT c.clinicId FROM Clinic c WHERE c.clinicAdmin.username = :username")
+    Integer findClinicByClinicAdminUsername(@Param("username") String username);
+
+
+    Optional<Clinic> findByName(String name);
 }

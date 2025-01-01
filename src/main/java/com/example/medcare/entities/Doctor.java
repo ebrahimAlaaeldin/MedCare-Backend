@@ -19,6 +19,13 @@ public class Doctor extends User {
     @Embedded
     private License license;
 
+
+
+
+    @OneToMany(mappedBy = "doctorId")
+    private List<DoctorClinic> doctorClinics;
+
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "doctor_clinic",
