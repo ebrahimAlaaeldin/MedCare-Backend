@@ -17,7 +17,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     List<Doctor> findAllByIsVerified(Boolean isVerified);
 
 
-    Optional<Doctor> findByUsername(String username);
+//    Optional<Doctor> findByUsername(String username);
 
     @Query("SELECT d FROM Doctor d join User u  on u.id = d.id WHERE u.username = :username")
     Optional<Doctor> findByUsername(@Param("username") String username);

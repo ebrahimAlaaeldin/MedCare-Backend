@@ -14,7 +14,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "Appointment")
+@Table(
+        name = "Appointment",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"doctor_username", "appointmentDateTime"}
+        )
+)
 public class Appointment {
 
     @Id
