@@ -1,4 +1,4 @@
-package com.example.medcare.Service;
+package com.example.medcare.service;
 
 import com.example.medcare.dto.AddDoctorDTO;
 import com.example.medcare.dto.DoctorDTO;
@@ -6,7 +6,6 @@ import com.example.medcare.entities.Clinic;
 import com.example.medcare.entities.Doctor;
 import com.example.medcare.repository.ClinicRepository;
 import com.example.medcare.repository.DoctorRepository;
-import com.example.medcare.service.ClinicAdminService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

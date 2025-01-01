@@ -1,4 +1,4 @@
-package com.example.medcare.Service;
+package com.example.medcare.service;
 
 import com.example.medcare.Mappers.ClinicMapper;
 import com.example.medcare.Mappers.DoctorMapper;
@@ -9,7 +9,6 @@ import com.example.medcare.entities.Clinic;
 import com.example.medcare.entities.Doctor;
 import com.example.medcare.repository.ClinicRepository;
 import org.junit.jupiter.api.BeforeEach;
-import  com.example.medcare.service.ClinicService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

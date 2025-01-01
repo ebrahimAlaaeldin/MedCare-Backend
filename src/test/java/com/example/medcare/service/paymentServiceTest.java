@@ -1,4 +1,4 @@
-package com.example.medcare.Services;
+package com.example.medcare.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -17,7 +17,6 @@ import com.example.medcare.entities.Appointment;
 import com.example.medcare.entities.Payment;
 import com.example.medcare.repository.AppointmentRepository;
 import com.example.medcare.repository.paymentRepository;
-import com.example.medcare.service.paymentService;
 
 class paymentServiceTest {
 
