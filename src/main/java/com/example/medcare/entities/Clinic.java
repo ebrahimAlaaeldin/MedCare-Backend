@@ -50,4 +50,7 @@ public class Clinic {
     private List<Doctor> doctors;
 
 
+    public Clinic(int i, String healthClinic) {
+
+    }
 }

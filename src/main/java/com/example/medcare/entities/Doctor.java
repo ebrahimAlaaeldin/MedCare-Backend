@@ -40,13 +40,8 @@ public class Doctor extends User {
 
    
     private boolean isVerified;
-    
-    
 
 
-
-
-
-
-
+    public Doctor(long l, String s, String cardiology, Clinic healthClinic) {
+    }
 }
