@@ -18,6 +18,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
 
 
 
+
     @Query("SELECT d FROM Doctor d join User u  on u.id = d.id WHERE u.username = :username")
     Optional<Doctor> findByUsername(@Param("username") String username);
 
